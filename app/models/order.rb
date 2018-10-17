@@ -130,7 +130,7 @@ class Order < ApplicationRecord
     )
   end
 
-  ransacker :last_admin_note_type, type: :string do |parent|
+  ransacker :last_admin_note_type, type: :string do
     query = <<~SQL
       (SELECT note_type
          FROM admin_notes
@@ -140,7 +140,7 @@ class Order < ApplicationRecord
     Arel.sql(query)
   end
 
-  def last_admin_note 
+  def last_admin_note
     admin_notes.order(:created_at).last
   end
 
