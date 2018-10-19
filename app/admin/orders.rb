@@ -218,7 +218,6 @@ ActiveAdmin.register Order do
     end
 
     panel "Admin Actions and Notes" do
-      #TODO: Add "Add note" button
       h5 link_to("Add note", new_admin_order_admin_note_path(order), class: :button)
       table_for(order.admin_notes) do
         column :created_at

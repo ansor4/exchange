@@ -1,5 +1,6 @@
 development: &default
   artwork_url: <%= "#{ENV['FORCE_URL']}/artwork" %>
+  orders_url: <%= "#{ENV['FORCE_URL']}/orders" %>
 test:
   <<: *default
 production:
