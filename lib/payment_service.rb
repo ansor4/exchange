@@ -17,7 +17,7 @@ class PaymentService
   def capture_hold
     raise Errors::ProcessingError, :cannot_capture unless payment_intent.status == 'requires_capture'
 
-    payment_intent.capture
+    payment_intent.capture(transfer_data: { amount: order.seller_total_cents })
     new_transaction = Transaction.new(
       external_id: payment_intent.id,
       external_type: Transaction::PAYMENT_INTENT,

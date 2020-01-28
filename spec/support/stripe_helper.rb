@@ -69,6 +69,14 @@ RSpec.shared_context 'include stripe helper' do
     mock_payment_intent_call(:retrieve, payment_intent)
   end
 
+  def prepare_payment_intent_capture_update_transfer_data_success(payment_method: 'cc_1', amount: 20_00, transfer_amount: 20_00)
+    payment_intent = double(id: 'pi_1', payment_method: payment_method, amount: amount, capture_method: 'manual', transfer_data: double(destination: 'ma_1', amount: transfer_amount))
+    allow(payment_intent).to receive(:status).and_return('requires_capture', 'succeeded')
+    allow(payment_intent).to receive(:capture)
+    allow(payment_intent).to receive(:to_h).and_return(id: 'pi_1', client_secret: 'pi_test1', 'transfer_data' => { 'amount' => transfer_amount })
+    allow(Stripe::PaymentIntent).to receive(:retrieve).and_return(payment_intent)
+  end
+
   def prepare_payment_intent_cancel_failure(charge_error:, payment_method: 'cc_1', amount: 20_00)
     payment_intent = double(id: 'pi_1', payment_method: payment_method, amount: amount, capture_method: 'manual', status: 'requires_capture', transfer_data: double(destination: 'ma_1'), last_payment_error: double(charge_error))
     error = Stripe::CardError.new(charge_error[:message], decline_code: charge_error[:decline_code], code: charge_error[:code])

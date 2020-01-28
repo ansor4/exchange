@@ -278,6 +278,19 @@ describe PaymentService, type: :services do
       )
       expect(transaction.payload).not_to be_nil
     end
+
+    it 'alters transfer amount on capture with transfer data param' do
+      prepare_payment_intent_capture_update_transfer_data_success(amount: 20_00, transfer_amount: 15_00)
+      transaction = service.capture_hold
+      expect(transaction).to have_attributes(
+        external_type: Transaction::PAYMENT_INTENT,
+        amount_cents: 20_00,
+        transaction_type: Transaction::CAPTURE,
+        source_id: 'cc_1',
+        status: Transaction::SUCCESS,
+        payload: { 'client_secret' => 'pi_test1', 'id' => 'pi_1', 'transfer_data' => { 'amount' => 1500 } }
+      )
+    end
   end
 
   describe '#refund_payment' do
