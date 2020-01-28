@@ -1,0 +1,13 @@
+mutation($input: CreditCommissionExemptionInput!) {
+  creditCommissionExemption(input: $input) {
+    totalRemainingGmvOrError {
+      ... on Money {
+        amountMinor
+      }
+      ... on Error {
+        message
+        code
+      }
+    }
+  }
+}

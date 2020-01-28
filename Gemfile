@@ -48,3 +48,5 @@ group :test do
   gem 'timecop'
   gem 'webmock'
 end
+
+gem "artemis", "~> 0.5.2"

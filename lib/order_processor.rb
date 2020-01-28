@@ -116,4 +116,10 @@ class OrderProcessor
     ReminderFollowUpJob.set(wait_until: order.state_expiration_reminder_time).perform_later(order.id, order.state)
     Exchange.dogstatsd.increment "order.#{order.state}"
   end
+
+  def self.debit_exemption
+    Gravity.authenticated.debit_commission_exemption(partner_id: '581b45e4cd530e658b000124', exemption: {amount_minor: 1, currency_code: 'USD'}, reference_id: SecureRandom.uuid,  notes: "hello world")
+  end
+
+  def revert_debit_exemption; end
 end

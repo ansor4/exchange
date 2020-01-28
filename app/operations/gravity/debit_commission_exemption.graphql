@@ -1,0 +1,13 @@
+mutation($input: DebitCommissionExemptionInput!) {
+  debitCommissionExemption(input: $input) {
+    amountOfExemptGmvOrError {
+      ... on Money {
+        amountMinor
+      }
+      ... on Error {
+        message
+        code
+      }
+    }
+  }
+}
