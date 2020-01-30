@@ -118,7 +118,15 @@ class OrderProcessor
   end
 
   def self.debit_exemption
-    Gravity.authenticated.debit_commission_exemption(partner_id: '581b45e4cd530e658b000124', exemption: {amount_minor: 1, currency_code: 'USD'}, reference_id: SecureRandom.uuid,  notes: "hello world")
+    mutation_args = {
+      input: {
+        partnerId: '581b45e4cd530e658b000124',
+        exemption: { amountMinor: 1, currencyCode: 'USD' },
+        referenceId: SecureRandom.uuid,
+        notes: "hello world"
+      }
+    }
+    Gravity.authenticated.debit_commission_exemption(mutation_args)
   end
 
   def revert_debit_exemption; end
