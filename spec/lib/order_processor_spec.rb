@@ -32,6 +32,10 @@ describe OrderProcessor, type: :services do
   let(:stub_line_item_2_gravity_deduct) { stub_request(:put, "#{Rails.application.config_for(:gravity)['api_v1_root']}/artwork/a2/inventory").with(body: { deduct: 2 }) }
   let(:stub_line_item_2_gravity_undeduct) { stub_request(:put, "#{Rails.application.config_for(:gravity)['api_v1_root']}/artwork/a2/inventory").with(body: { undeduct: 2 }) }
 
+  # TODO: Add currency to graphql_response
+  let(:debit_commission_exemption_gravity_response) { { "data" => { "debitCommissionExemption" => { "amountOfExemptGmvOrError" => { "amountMinor" => 1000 } } } } }
+  let(:stub_debit_commission_exemption_gravity) { stub_request(:put, "#{Rails.application.config_for(:gravity)['graphql_api_root']}").with(body: debit_commission_exemption_gravity_response ) }
+
   # stubbed requests
   let(:gravity_partner) { gravity_v1_partner(_id: seller_id) }
   let(:stub_gravity_partner) { stub_request(:get, "#{Rails.application.config_for(:gravity)['api_v1_root']}/partner/seller1/all").to_return(body: gravity_partner.to_json) }
@@ -149,6 +153,12 @@ describe OrderProcessor, type: :services do
       order_processor.revert!
       expect(order.reload).to have_attributes(state: Order::SUBMITTED, state_expires_at: original_state_expires_at)
       expect(order_processor.instance_variable_get(:@state_changed)).to eq false
+    end
+    it 'it reverts debit commission exemption' do
+      # TODO: Add currency to graphql_response
+      graphql_response =  { "totalRemainingGmvOrError" => { "amountMinor" => 1000 } } 
+      allow (Gravity).to receive(credit_commission_exemption).and_return(graphql_response) 
+      # TODO: add reversion test here, maybe expect Gravity.credit_commission_exemption to be called with the amount debited
     end
   end
 
@@ -361,6 +371,29 @@ describe OrderProcessor, type: :services do
     it 'overrides off_session when passed to method' do
       expect_any_instance_of(PaymentService).to receive(:immediate_capture).with(hash_including(off_session: true))
       order_processor.charge(true)
+    end
+  end
+
+  describe 'debit_exemption' do
+    context 'on success' do
+      before do
+        stub_debit_commission_exemption_gravity
+      end
+
+      it 'sets @exempted_commission' do 
+        expect(order_processor.exempted_commission).to be true
+      end
+
+      it 'sets @exempted_commission' do 
+      end
+
+    end
+    context 'on failure' do
+      before do
+        stub_debit_commission_exemption_gravity
+      end
+      it 'does not alter commission' do
+      end
     end
   end
 end

@@ -93,4 +93,30 @@ module Gravity
     end
     items
   end
+
+  def self.debit_commission_exemption(partner_id, amount_minor, currency_code, reference_id, notes)
+    mutation_args = {
+      input: {
+        partnerId: partner_id,
+        exemption: { amountMinor: amount_minor, currencyCode: currency_code },
+        referenceId: reference_id,
+        notes: notes
+      }
+    }
+    response = GravityGraphql.authenticated.debit_commission_exemption(mutation_args)
+    response['data']['debitCommissionExemption']
+  end
+
+  def self.credit_commission_exemption(partner_id, amount_minor, currency_code, reference_id, notes)
+    mutation_args = {
+      input: {
+        partnerId: partner_id,
+        exemption: { amountMinor: amount_minor, currencyCode: currency_code },
+        referenceId: reference_id,
+        notes: notes
+      }
+    }
+    response = GravityGraphql.authenticated.credit_commission_exemption(mutation_args)
+    response['data']['creditCommissionExemption']
+  end
 end

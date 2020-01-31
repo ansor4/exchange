@@ -69,16 +69,19 @@ module OrderService
     order
   rescue StandardError => e
     # catch all
+    order_processor.revert_reason = e.message
     order_processor&.revert!
     raise e
   end
 
+  # Called from graphql mutation, as well as active_admin (so admins can approve orders that expired?)
   def self.approve!(order, user_id)
     raise Errors::ValidationError.new(:unsupported_payment_method, order.payment_method) unless order.payment_method == Order::CREDIT_CARD
 
     payment_service = PaymentService.new(order)
     transaction = nil
     order.approve! do
+      # Where the shit goes down, capture_hold will refetch the seller amount on the order row
       transaction = payment_service.capture_hold
       raise Errors::ProcessingError.new(:capture_failed, transaction.failure_data) if transaction.failed?
     end

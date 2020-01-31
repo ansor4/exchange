@@ -13,11 +13,14 @@ class OrderProcessor
     @state_changed = false
     @original_state_expires_at = nil
     @payment_service = PaymentService.new(@order)
+    @exempted_commission = nil 
+    @revert_reason = nil
   end
 
   def revert!
     undeduct_inventory! if @deducted_inventory.any?
     reset_totals! if @totals_set
+    revert_debit_exemption(@reversion_reason) if @exempted_commission && @exempted_commission > 0
     return unless @state_changed
 
     order.revert!
@@ -117,17 +120,12 @@ class OrderProcessor
     Exchange.dogstatsd.increment "order.#{order.state}"
   end
 
-  def self.debit_exemption
-    mutation_args = {
-      input: {
-        partnerId: '581b45e4cd530e658b000124',
-        exemption: { amountMinor: 1, currencyCode: 'USD' },
-        referenceId: SecureRandom.uuid,
-        notes: "hello world"
-      }
-    }
-    GravityGraphql.authenticated.debit_commission_exemption(mutation_args)
+  def debit_and_apply_commission_exemption(action)
+    Gravity.debit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, action)
+    @exempted_commission = true
   end
 
-  def revert_debit_exemption; end
+  def revert_debit_exemption(reversion_reason)
+    Gravity.credit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, reversion_reason)
+  end
 end
