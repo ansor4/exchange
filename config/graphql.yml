@@ -19,16 +19,16 @@ default: &default
   pool_size: 25
 
 development:
-  gravity:
+  gravity_graphql:
     <<: *default
     url: <%= ENV['GRAVITY_GRAPHQL_API_URL'] %>
 
 test:
-  gravity:
+  gravity_graphql:
     <<: *default
     url: https://gravity.biz
 
 production:
-  gravity:
+  gravity_graphql:
     <<: *default
     url: <%= ENV['GRAVITY_GRAPHQL_API_URL'] %>

@@ -126,7 +126,7 @@ class OrderProcessor
         notes: "hello world"
       }
     }
-    Gravity.authenticated.debit_commission_exemption(mutation_args)
+    GravityGraphql.authenticated.debit_commission_exemption(mutation_args)
   end
 
   def revert_debit_exemption; end
