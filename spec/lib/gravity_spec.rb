@@ -211,4 +211,38 @@ describe Gravity, type: :services do
       expect(response.length).to eq 0
     end
   end
+
+  describe '#debit_commission_exemption' do
+    let(:buyer_id) { 'buyer1' }
+    let(:seller_id) { 'seller1' }
+    let(:order_mode) { Order::BUY }
+    let(:order) do
+      Fabricate(
+        :order,
+        mode: order_mode,
+        buyer_id: buyer_id,
+        fulfillment_type: Order::SHIP,
+        credit_card_id: 'cc1',
+        seller_id: seller_id,
+        shipping_name: 'Fname Lname',
+        shipping_address_line1: '12 Vanak St',
+        shipping_address_line2: 'P 80',
+        shipping_city: 'Tehran',
+        shipping_postal_code: '02198',
+        buyer_phone_number: '00123456',
+        shipping_country: 'IR',
+        items_total_cents: 1000_00
+      )
+    end
+    let(:artwork) { gravity_v1_artwork(_id: 'a-1', current_version_id: '1') }
+    let(:stub_artwork_request) { stub_request(:get, "#{Rails.application.config_for(:gravity)['api_v1_root']}/artwork/a-1").to_return(status: 200, body: artwork.to_json) }
+    let!(:line_item1) { Fabricate(:line_item, order: order, quantity: 1, list_price_cents: 1000_00, artwork_id: 'a-1', artwork_version_id: '1') }
+    it 'tktk' do
+      # allow(Gravity).to receive(:debit_commission_exemption).and_return(1000)
+      # allow(GravityGraphql).to receive_message_chain(:authenticated, :debit_commission_exemption).with({:input=>{:partnerId=>"seller1", :exemption=>{:amountMinor=>100000, :currencyCode=>"USD"}, :referenceId=>order.id, :notes=>"test"}})
+      stub_request(:post, "https://gravity.biz")
+      response = Gravity.debit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, "test")
+      byebug
+    end
+  end
 end

@@ -20,7 +20,8 @@ describe OrderProcessor, type: :services do
       shipping_city: 'Tehran',
       shipping_postal_code: '02198',
       buyer_phone_number: '00123456',
-      shipping_country: 'IR'
+      shipping_country: 'IR',
+      items_total_cents: 1000_00
     )
   end
   let(:artwork) { gravity_v1_artwork(_id: 'a-1', current_version_id: '1') }
@@ -35,7 +36,9 @@ describe OrderProcessor, type: :services do
   # TODO: Add currency to graphql_response
   let(:debit_commission_exemption_gravity_response) { { "data" => { "debitCommissionExemption" => { "amountOfExemptGmvOrError" => { "amountMinor" => 1000 } } } } }
   let(:stub_debit_commission_exemption_gravity) { stub_request(:put, "#{Rails.application.config_for(:gravity)['graphql_api_root']}").with(body: debit_commission_exemption_gravity_response ) }
-
+  # something like
+  allow(Gravity).to receive(:debit_commission_exemption).and_return(1000)
+  
   # stubbed requests
   let(:gravity_partner) { gravity_v1_partner(_id: seller_id) }
   let(:stub_gravity_partner) { stub_request(:get, "#{Rails.application.config_for(:gravity)['api_v1_root']}/partner/seller1/all").to_return(body: gravity_partner.to_json) }
@@ -374,25 +377,50 @@ describe OrderProcessor, type: :services do
     end
   end
 
-  describe 'debit_exemption' do
-    context 'on success' do
-      before do
-        stub_debit_commission_exemption_gravity
-      end
-
-      it 'sets @exempted_commission' do 
-        expect(order_processor.exempted_commission).to be true
-      end
-
-      it 'sets @exempted_commission' do 
-      end
-
+  describe 'apply_commission_exemption' do
+    before do
+      stub_gravity_partner
+      stub_artwork_request
+      order_processor.set_totals!
     end
-    context 'on failure' do
-      before do
-        stub_debit_commission_exemption_gravity
+    context 'on success' do
+      it 'updates order with new commission amount' do
+        exemption = order_processor.apply_commission_exemption(100_00)
+        # Quick maths: we've gone from a 1000_00 order (the full amount) with 80% commission to a 900_00 order (because 100_00 is exempt) with 80% commission, so 900 x .8 = 720
+        expect(order_processor.instance_variable_get(:@exempted_commission)).to be true
+        expect(order.commission_fee_cents).to eq 720_00
+        expect(order.seller_total_cents).to eq 250_70
       end
+    end
+
+    it 'doesn\'t change commission when exemption is 0' do
+      exemption = order_processor.apply_commission_exemption(0)
+      expect(order_processor.instance_variable_get(:@exempted_commission)).to be false
+      expect(order.commission_fee_cents).to eq 800_00
+      expect(order.seller_total_cents).to eq 170_70
+    end
+
+  end
+
+  describe 'debit_commission_exemption' do
+    before do
+      stub_gravity_partner
+      stub_artwork_request
+      order_processor.set_totals!
+    end
+    context 'on success' do
+      it 'calls apply_commission_exemption' do
+        stub_debit_commission_exemption_gravity
+        expect(order_processor).to receive(:apply_commission_exemption).with(10_00)
+        order_processor.debit_commission_exemption("test debit")
+      end
+    end
+
+    context 'on failure' do
       it 'does not alter commission' do
+        exemption = order_processor.debit_commission_exemption("test debit")
+        expect(order_processor.instance_variable_get(:@exempted_commission)).to be false
+        expect(order.commission_fee_cents).to eq 800_00
       end
     end
   end

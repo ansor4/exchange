@@ -13,7 +13,7 @@ class OrderProcessor
     @state_changed = false
     @original_state_expires_at = nil
     @payment_service = PaymentService.new(@order)
-    @exempted_commission = nil 
+    @exempted_commission = false 
     @revert_reason = nil
   end
 
@@ -120,8 +120,24 @@ class OrderProcessor
     Exchange.dogstatsd.increment "order.#{order.state}"
   end
 
-  def debit_and_apply_commission_exemption(action)
-    Gravity.debit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, action)
+  # Called during approval and before capture - should alter the seller_total_cents, commission_cents, commission_rate
+  # After this is called, exemption exists in Gravity and we're ready to alter the order
+  def debit_commission_exemption(action)
+    gmv_to_exempt = Gravity.debit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, action)
+    apply_commission_exemption
+    gmv_to_exempt
+  end
+  
+  def apply_commission_exemption(exemption_amount_cents)
+    return unless exemption_amount_cents > 0
+
+    final_commission_cents = (order.items_total_cents - exemption_amount_cents) * order.commission_rate
+    order.line_items.each { |li| li.update!(commission_fee_cents: final_commission_cents) } if order.mode == Order::BUY
+    order.update!(
+      commission_fee_cents: @order.line_items.map(&:commission_fee_cents).sum,
+    )
+    totals = order.mode == Order::BUY ? BuyOrderTotals.new(@order) : OfferOrderTotals.new(@offer)
+    order.update!(seller_total_cents: totals.seller_total_cents)
     @exempted_commission = true
   end
 

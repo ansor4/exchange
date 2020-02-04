@@ -18,6 +18,8 @@ default: &default
   # It is set to 25 by default.
   pool_size: 25
 
+  schema_path: "vendor/graphql/schema/gravity.json"
+
 development:
   gravity_graphql:
     <<: *default

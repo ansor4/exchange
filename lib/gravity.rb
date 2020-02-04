@@ -95,6 +95,7 @@ module Gravity
   end
 
   def self.debit_commission_exemption(partner_id, amount_minor, currency_code, reference_id, notes)
+    byebug
     mutation_args = {
       input: {
         partnerId: partner_id,
@@ -103,8 +104,12 @@ module Gravity
         notes: notes
       }
     }
-    response = GravityGraphql.authenticated.debit_commission_exemption(mutation_args)
+    response = GravityGraphql.authenticated.debit_commission_exemption(mutation_args).to_h
     response['data']['debitCommissionExemption']
+  # rescue Adapters::GravityNotFoundError
+  #   raise Errors::ValidationError.new(:unknown_partner, partner_id: partner_id)
+  # rescue Adapters::GravityError
+  #   raise Errors::InternalError.new(:gravity, message: e.message)
   end
 
   def self.credit_commission_exemption(partner_id, amount_minor, currency_code, reference_id, notes)

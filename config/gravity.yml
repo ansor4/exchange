@@ -3,7 +3,7 @@ development: &default
   xapp_token: <%= ENV['GRAVITY_JWT'] || 'https://media.giphy.com/media/yow6i0Zmp7G24/giphy.gif' %>
   artwork_cache_in_seconds: <%= (ENV['ARTWORK_CACHE_IN_SECONDS'] || '600').to_i %>
   partner_cache_in_seconds: <%= (ENV['PARTNER_CACHE_IN_SECONDS'] || '600').to_i %>
-  graphql_api_root: <%= ENV['GRAVITY_GRAPHQL_API_URL'] %>
+  graphql_api_root: <%= "#{ENV['GRAVITY_API_ROOT'] || 'https://stagingapi.artsy.net'}/api/graphql" %>
 test:
   <<: *default
   api_v1_root: "http://exchange-test-gravity.biz"
