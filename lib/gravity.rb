@@ -123,9 +123,7 @@ module Gravity
     }
     response = GravityGraphql.authenticated.credit_commission_exemption(mutation_args).to_h
     response['data']['creditCommissionExemption']
-  rescue Adapters::GravityNotFoundError
-    raise Errors::ValidationError.new(:unknown_partner, partner_id: partner_id)
-  rescue Adapters::GravityError
+  rescue Artemis::GraphQLServerError => e
     raise Errors::InternalError.new(:gravity, message: e.message)
   end
 end

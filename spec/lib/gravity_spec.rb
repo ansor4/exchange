@@ -245,4 +245,37 @@ describe Gravity, type: :services do
       byebug
     end
   end
+
+  describe '#credit_commission_exemption' do
+    let(:amount_minor) { 10_00 }
+    let(:currency_code) {'USD'}
+    let(:reference_id) { 'f163fc11-d073-415e-b2bf-b25fc9d0a6cb' }
+    let(:notes) { 'sale' }
+    let(:stub_gravity_graphql_request_on_error) {
+      stub_request(:post, "https://gravity.biz/").to_return(status: 500)
+    }
+    let(:stub_gravity_graphql_request_on_success) {
+      stub_request(:post, "https://gravity.biz/").to_return(status: 200,
+        body: "{
+          \"data\": {
+            \"creditCommissionExemption\": {
+              \"totalRemainingGmvOrError\" : {
+                \"__typename\" : \"Money\",
+                \"amountMinor\" : 1000,
+                \"currencyCode\" : \"USD\"
+              }
+            }
+          }
+        }")
+    }
+    it 'raises InternalError if Gravity is unavailable' do
+      stub_gravity_graphql_request_on_error
+      expect{ Gravity.credit_commission_exemption(seller_id, amount_minor, currency_code, reference_id, notes) }.to raise_error(Errors::InternalError)
+    end
+    it 'returns properly formatted result' do
+      stub_gravity_graphql_request_on_success
+      res = Gravity.credit_commission_exemption(seller_id, amount_minor, currency_code, reference_id, notes) 
+      expect(res).to eq({"totalRemainingGmvOrError"=>{"__typename"=>"Money", "amountMinor"=>1000, "currencyCode" => "USD"}})
+    end
+  end
 end
