@@ -249,13 +249,13 @@ describe Gravity, type: :services do
   describe '#credit_commission_exemption' do
     let(:amount_minor) { 10_00 }
     let(:currency_code) {'USD'}
-    let(:reference_id) { 'f163fc11-d073-415e-b2bf-b25fc9d0a6cb' }
+    let(:reference_id) { SecureRandom.uuid }
     let(:notes) { 'sale' }
     let(:stub_gravity_graphql_request_on_error) {
-      stub_request(:post, "https://gravity.biz/").to_return(status: 500)
+      stub_request(:post, "#{Rails.application.config_for(:gravity)['api_v1_root']}").to_return(status: 500)
     }
     let(:stub_gravity_graphql_request_on_success) {
-      stub_request(:post, "https://gravity.biz/").to_return(status: 200,
+      stub_request(:post, "#{Rails.application.config_for(:gravity)['api_v1_root']}").to_return(status: 200,
         body: "{
           \"data\": {
             \"creditCommissionExemption\": {
