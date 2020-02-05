@@ -37,7 +37,7 @@ describe OrderProcessor, type: :services do
   let(:debit_commission_exemption_gravity_response) { { "data" => { "debitCommissionExemption" => { "amountOfExemptGmvOrError" => { "amountMinor" => 1000 } } } } }
   let(:stub_debit_commission_exemption_gravity) { stub_request(:put, "#{Rails.application.config_for(:gravity)['graphql_api_root']}").with(body: debit_commission_exemption_gravity_response ) }
   # something like
-  allow(Gravity).to receive(:debit_commission_exemption).and_return(1000)
+  # allow(Gravity).to receive(:debit_commission_exemption).and_return(1000)
   
   # stubbed requests
   let(:gravity_partner) { gravity_v1_partner(_id: seller_id) }
@@ -158,10 +158,12 @@ describe OrderProcessor, type: :services do
       expect(order_processor.instance_variable_get(:@state_changed)).to eq false
     end
     it 'it reverts debit commission exemption' do
-      # TODO: Add currency to graphql_response
-      graphql_response =  { "totalRemainingGmvOrError" => { "amountMinor" => 1000 } } 
-      allow (Gravity).to receive(credit_commission_exemption).and_return(graphql_response) 
-      # TODO: add reversion test here, maybe expect Gravity.credit_commission_exemption to be called with the amount debited
+      order.submit!
+      order.approve!
+      order_processor.instance_variable_set(:@exempted_commission, true)
+      expect(Gravity).to receive(:credit_commission_exemption)
+      order_processor.revert!
+      expect(order_processor.instance_variable_get(:@exempted_commission)).to eq false
     end
   end
 

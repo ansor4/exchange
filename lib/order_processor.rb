@@ -20,7 +20,7 @@ class OrderProcessor
   def revert!
     undeduct_inventory! if @deducted_inventory.any?
     reset_totals! if @totals_set
-    revert_debit_exemption! if @exempted_commission && @exempted_commission > 0
+    revert_debit_exemption! if @exempted_commission
     return unless @state_changed
 
     order.revert!
