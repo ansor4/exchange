@@ -20,7 +20,7 @@ class OrderProcessor
   def revert!
     undeduct_inventory! if @deducted_inventory.any?
     reset_totals! if @totals_set
-    revert_debit_exemption(@reversion_reason) if @exempted_commission && @exempted_commission > 0
+    revert_debit_exemption! if @exempted_commission && @exempted_commission > 0
     return unless @state_changed
 
     order.revert!
@@ -141,7 +141,9 @@ class OrderProcessor
     @exempted_commission = true
   end
 
-  def revert_debit_exemption(reversion_reason)
-    Gravity.credit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, reversion_reason)
+  def revert_debit_exemption!
+    # Let's not catch the Gravity errors for creditCommissionExemption, better to let that fail loudly
+    Gravity.credit_commission_exemption(order.seller_id, order.items_total_cents, order.currency_code, order.id, @revert_reason)
+    @exempted_commission = false
   end
 end
