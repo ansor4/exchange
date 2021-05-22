@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Api::GraphqlController, type: :request do
   describe 'ErrorType' do
-    let(:auth_headers) { jwt_headers(user_id: 'user-id', partner_ids: ['p1'], roles: []) }
+    let(:auth_headers) { jwt_headers(user_id: 'user-id', partner_ids: %w[p1 p2], roles: []) }
     let(:mutation_input) do
       {
         artworkId: 'test'
@@ -112,7 +112,7 @@ describe Api::GraphqlController, type: :request do
 
         before do
           expect(Order).to receive(:find_by!).and_raise(Errors::ValidationError, :invalid_order)
-          allow(Raven).to receive_messages({ user_context: nil, capture_exception: nil })
+          allow(Raven).to receive_messages({ user_context: nil, tags_context: nil, capture_exception: nil })
 
           post '/api/graphql', params: { query: query, variables: { id: order.id.to_s } }, headers: auth_headers
         end
@@ -139,8 +139,9 @@ describe Api::GraphqlController, type: :request do
           )
         end
 
-        it 'does not capture the error in Sentry' do
-          expect(Raven).to_not have_received(:user_context)
+        it 'sets Sentry context but does not capture the error in Sentry' do
+          expect(Raven).to have_received(:user_context).with(id: 'user-id')
+          expect(Raven).to have_received(:tags_context).with(partner_ids: 'p1, p2')
           expect(Raven).to_not have_received(:capture_exception)
         end
       end
@@ -148,7 +149,7 @@ describe Api::GraphqlController, type: :request do
       context 'raised from a mutation' do
         before do
           expect(OrderService).to receive(:create_with_artwork!).and_raise(Errors::ProcessingError, :artwork_version_mismatch)
-          allow(Raven).to receive_messages({ user_context: nil, capture_exception: nil })
+          allow(Raven).to receive_messages({ user_context: nil, tags_context: nil, capture_exception: nil })
 
           post '/api/graphql', params: { query: mutation, variables: { input: mutation_input } }, headers: auth_headers
         end
@@ -176,9 +177,10 @@ describe Api::GraphqlController, type: :request do
           )
         end
 
-        it 'does not capture the error in Sentry' do
-          expect(Raven).to_not have_received(:user_context)
-          expect(Raven).to_not have_received(:capture_exception)
+        it 'captures the error in Sentry' do
+          expect(Raven).to have_received(:user_context).with(id: 'user-id')
+          expect(Raven).to have_received(:tags_context).with(partner_ids: 'p1, p2')
+          expect(Raven).to have_received(:capture_exception)
         end
       end
     end
