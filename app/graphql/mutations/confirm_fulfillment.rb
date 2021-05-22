@@ -15,7 +15,5 @@ class Mutations::ConfirmFulfillment < Mutations::BaseMutation
     {
       order_or_error: { order: order }
     }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 end

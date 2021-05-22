@@ -16,8 +16,6 @@ class Mutations::SellerCounterOffer < Mutations::BaseMutation
 
     OfferService.submit_pending_offer(pending_offer)
     { order_or_error: { order: order } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 
   private

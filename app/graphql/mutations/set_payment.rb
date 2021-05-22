@@ -15,7 +15,5 @@ class Mutations::SetPayment < Mutations::BaseMutation
     {
       order_or_error: { order: OrderService.set_payment!(order, credit_card_id) }
     }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 end

@@ -15,8 +15,6 @@ class Mutations::BuyerCounterOffer < Mutations::BaseMutation
     pending_offer = OfferService.create_pending_counter_offer(offer, amount_cents: amount_cents, note: note, from_id: offer.order.buyer_id, from_type: offer.order.buyer_type, creator_id: current_user_id)
 
     { order_or_error: { order: pending_offer.order } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 
   private

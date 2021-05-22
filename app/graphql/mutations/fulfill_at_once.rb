@@ -13,7 +13,5 @@ class Mutations::FulfillAtOnce < Mutations::BaseMutation
     {
       order_or_error: { order: OrderService.fulfill_at_once!(order, fulfillment.to_h, context[:current_user][:id]) }
     }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 end

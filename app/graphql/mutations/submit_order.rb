@@ -10,8 +10,7 @@ class Mutations::SubmitOrder < Mutations::BaseMutation
     authorize_buyer_request!(order)
     { order_or_error: { order: OrderService.submit!(order, current_user_id) } }
   rescue Errors::PaymentRequiresActionError => e
+    Raven.capture_exception(e)
     { order_or_error: { action_data: e.action_data } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 end
