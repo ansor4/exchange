@@ -10,10 +10,7 @@ module ARTA
       artwork = Gravity.get_artwork(@line_item.artwork_id)
       return unless artwork
 
-      data = ARTA::Quote.create(
-        artwork: artwork,
-        list_price_cents: @line_item.list_price_cents
-      )
+      data = ARTA::Quote.new(artwork, @line_item).post
 
       shipping_quote_request = ShippingQuoteRequest.new(
         line_item_id: @line_item.id,
