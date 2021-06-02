@@ -7,6 +7,7 @@ describe ARTA::ShippingService do
     end
 
     before do
+      allow(Gravity).to receive(:get_user).and_return({})
       allow(Gravity).to receive(:get_artwork).and_return({})
       allow_any_instance_of(ARTA::Quote).to receive(:post).and_return(response)
     end

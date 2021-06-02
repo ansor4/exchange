@@ -2,12 +2,13 @@ require 'rails_helper'
 
 describe ARTA::Quote do
   describe '.formatted_post_params' do
-    let(:line_item) { Fabricate(:line_item) }
+    let(:order) { Fabricate(:order, shipping_address_line1: '332 Prospect St', shipping_city: 'Niagara Falls', shipping_region: 'NY', shipping_country: 'US', shipping_postal_code: '14303', buyer_phone_number: '4517777777') }
+    let(:line_item) { Fabricate(:line_item, order: order) }
     let(:artwork) do
       {
         title: 'dog in the fog',
         category: 'Painting',
-        framed: true,
+        framed: false,
         height_cm: 30,
         diameter_cm: 40,
         width_cm: 25,
@@ -24,7 +25,7 @@ describe ARTA::Quote do
         }
       }
     end
-    let(:buyer) { {name: 'Pinky Pie', email: 'pinky@pie.com'} }
+    let(:buyer) { { name: 'Pinky Pie', email: 'pinky@pie.com' } }
     let(:service) { described_class.new(artwork, line_item) }
     # rubocop:disable Naming/VariableNumber
     let(:expected_params) do
@@ -34,120 +35,87 @@ describe ARTA::Quote do
           {
             address_line_1: '332 Prospect St',
             city: 'Niagara Falls',
-            contacts: [{ email_address: 'test@email.com', name: 'Collector Molly', phone_number: '4517777777' }],
+            contacts: [{ email_address: 'pinky@pie.com', name: 'Pinky Pie', phone_number: '4517777777' }],
             country: 'US',
             postal_code: '14303',
             region: 'NY',
-            title: 'Collector Molly'
+            title: 'Pinky Pie 06/03/2021 11:15'
           },
-          objects: [{ depth: 2, height: 30, subtype: 'painting_framed', unit_of_measurement: 'cm', value: 100.0, value_currency: 'EUR', weight: 2, weight_unit: 'KG', width: 25 }],
+          objects: [{ depth: 2, height: 30, subtype: 'painting_unframed', unit_of_measurement: 'cm', value: 100.0, value_currency: 'EUR', weight: 2, weight_unit: 'KG', width: 25 }],
           origin:
           {
-            address_line_1: '401 Broadway',
-            city: 'New York',
+            address_line_1: 'dog street 1',
+            city: 'Berlin',
             contacts: [{ email_address: 'partner@test.com', name: 'Artsy Partner', phone_number: '6313667777' }],
-            country: 'US',
-            postal_code: '10013',
-            region: 'NY',
-            title: 'Hello Gallery'
+            country: 'DE',
+            postal_code: '13409',
+            region: 'BE',
+            title: 'dog in the fog 06/03/2021 11:15'
           }
         } }
     end
     # rubocop:enable Naming/VariableNumber
     before do
+      Timecop.freeze(Time.zone.parse('03.06.2021 11:15'))
       allow(Gravity).to receive(:get_artwork).and_return(artwork)
       allow(Gravity).to receive(:get_user).and_return(buyer)
       allow(ARTA::Client).to receive(:post).and_return(true)
     end
+
+    after { Timecop.return }
 
     it 'posts to arta' do
       expect(service.post).to be true
       expect(service.send(:formatted_post_params)).to eq(expected_params)
     end
 
-    #   context 'when preparing artwork metadata' do
-    #     let(:expected_formatted_params) do
-    #       described_class.formatted_post_params(artwork_hash, list_price_cents)[:request]
-    #     end
+    context 'when preparing artwork metadata' do
+      context 'when artwork data present' do
+        before do
+          line_item.list_price_cents = 30000
+          artwork[:width_cm] = 10.7
+          artwork[:height_cm] = 11.0
+          artwork[:category] = 'Photography'
+        end
 
-    #     context 'when artwork data present' do
-    #       let(:list_price_cents) { 30000 }
+        context 'when artwork is framed' do
+          before do
+            artwork[:framed] = true
+          end
 
-    #       context 'when artwork is framed' do
-    #         let(:artwork_hash) do
-    #           {
-    #             category: 'Photography',
-    #             framed: true,
-    #             width_cm: 10.7,
-    #             height_cm: 11.0
-    #           }
-    #         end
+          it 'returns properly formatted object parameter' do
+            resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
+            expect(resolved_post_params[:height]).to eq(11.0)
+            expect(resolved_post_params[:subtype]).to eq('photograph_framed')
+            expect(resolved_post_params[:unit_of_measurement]).to eq('cm')
+            expect(resolved_post_params[:width]).to eq(10.7)
+            expect(resolved_post_params[:value]).to eq(300)
+          end
+        end
+      end
 
-    #         it 'returns properly formatted object parameter' do
-    #           expect(expected_formatted_params).to include({
-    #                                                          objects: [
-    #                                                            {
-    #                                                              height: 11.0,
-    #                                                              subtype: 'photograph_framed',
-    #                                                              unit_of_measurement: 'cm',
-    #                                                              width: 10.7,
-    #                                                              value: 300
-    #                                                            }
-    #                                                          ]
-    #                                                        })
-    #         end
-    #       end
+      context 'when artwork is not framed' do
+        before do
+          artwork[:framed] = false
+        end
 
-    #       context 'when artwork is not framed' do
-    #         let(:artwork_hash) do
-    #           {
-    #             category: 'Photography',
-    #             framed: false,
-    #             width_cm: 10.7,
-    #             height_cm: 11.0
-    #           }
-    #         end
+        it 'returns proper subtype' do
+          resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
+          expect(resolved_post_params[:subtype]).to eq('painting_unframed')
+        end
+      end
 
-    #         it 'returns properly formatted object parameter' do
-    #           expect(expected_formatted_params).to include({
-    #                                                          objects: [
-    #                                                            {
-    #                                                              height: 11.0,
-    #                                                              subtype: 'photograph_unframed',
-    #                                                              unit_of_measurement: 'cm',
-    #                                                              width: 10.7,
-    #                                                              value: 300
-    #                                                            }
-    #                                                          ]
-    #                                                        })
-    #         end
-    #       end
-    #     end
+      context 'when some artwork data is nil' do
+        before do
+          artwork[:width_cm] = nil
+          artwork[:diameter_cm] = nil
+        end
 
-    #     context 'when some artwork data is nil' do
-    #       let(:list_price_cents) { 30000 }
-    #       let(:artwork_hash) do
-    #         {
-    #           category: 'Photography',
-    #           framed: true,
-    #           width_cm: nil,
-    #           height_cm: 11.0
-    #         }
-    #       end
-
-    #       it 'returns properly formatted parameters' do
-    #         expect(expected_formatted_params).to include({
-    #                                                        objects: [
-    #                                                          {
-    #                                                            height: 11.0,
-    #                                                            subtype: 'photograph_framed',
-    #                                                            unit_of_measurement: 'cm',
-    #                                                            value: 300
-    #                                                          }
-    #                                                        ]
-    #                                                      })
-    #       end
-    #     end
-    #   end
+        it 'returns properly formatted parameters' do
+          resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
+          expect(resolved_post_params).not_to include(:width)
+        end
+      end
+    end
   end
 end
