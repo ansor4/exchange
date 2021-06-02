@@ -1,5 +1,7 @@
 module Api
   class GraphqlController < Api::BaseApiController
+    before_action :set_current_user_for_error_reporting
+
     def execute
       variables = ensure_hash(params[:variables])
       query = params[:query]

@@ -14,8 +14,6 @@ class Mutations::BaseAcceptOffer < Mutations::BaseMutation
 
     OfferService.accept_offer(offer, current_user_id)
     { order_or_error: { order: offer.order } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 
   def authorize!(_offer)

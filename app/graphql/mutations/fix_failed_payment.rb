@@ -25,8 +25,7 @@ class Mutations::FixFailedPayment < Mutations::BaseMutation
 
     { order_or_error: { order: order.reload } }
   rescue Errors::PaymentRequiresActionError => e
+    Raven.capture_exception(e)
     { order_or_error: { action_data: e.action_data } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 end

@@ -19,8 +19,6 @@ class Mutations::BaseRejectOffer < Mutations::BaseMutation
     OrderService.reject!(offer.order, current_user_id, sanitize_reject_reason(reject_reason))
 
     { order_or_error: { order: order } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 
   def authorize!(_order)

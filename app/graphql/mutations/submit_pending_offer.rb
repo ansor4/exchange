@@ -13,7 +13,5 @@ class Mutations::SubmitPendingOffer < Mutations::BaseMutation
     submitted_offer = OfferService.submit_pending_offer(offer)
 
     { order_or_error: { order: submitted_offer.order } }
-  rescue Errors::ApplicationError => e
-    { order_or_error: { error: Types::ApplicationErrorType.from_application(e) } }
   end
 end

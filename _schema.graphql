@@ -656,32 +656,142 @@ type LineItemEdge {
 }
 
 type Mutation {
-  addInitialOfferToOrder(input: AddInitialOfferToOrderInput!): AddInitialOfferToOrderPayload
-  approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-  buyerAcceptOffer(input: BuyerAcceptOfferInput!): BuyerAcceptOfferPayload
-  buyerCounterOffer(input: BuyerCounterOfferInput!): BuyerCounterOfferPayload
-  buyerRejectOffer(input: BuyerRejectOfferInput!): BuyerRejectOfferPayload
-  confirmFulfillment(input: ConfirmFulfillmentInput!): ConfirmFulfillmentPayload
-  confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
-  createInquiryOfferOrderWithArtwork(input: CreateInquiryOfferOrderWithArtworkInput!): CreateInquiryOfferOrderWithArtworkPayload
-  createOfferOrderWithArtwork(input: CreateOfferOrderWithArtworkInput!): CreateOfferOrderWithArtworkPayload
-  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
-  fixFailedPayment(input: FixFailedPaymentInput!): FixFailedPaymentPayload
+  addInitialOfferToOrder(
+    """
+    Parameters for AddInitialOfferToOrder
+    """
+    input: AddInitialOfferToOrderInput!
+  ): AddInitialOfferToOrderPayload
+  approveOrder(
+    """
+    Parameters for ApproveOrder
+    """
+    input: ApproveOrderInput!
+  ): ApproveOrderPayload
+  buyerAcceptOffer(
+    """
+    Parameters for BuyerAcceptOffer
+    """
+    input: BuyerAcceptOfferInput!
+  ): BuyerAcceptOfferPayload
+  buyerCounterOffer(
+    """
+    Parameters for BuyerCounterOffer
+    """
+    input: BuyerCounterOfferInput!
+  ): BuyerCounterOfferPayload
+  buyerRejectOffer(
+    """
+    Parameters for BuyerRejectOffer
+    """
+    input: BuyerRejectOfferInput!
+  ): BuyerRejectOfferPayload
+  confirmFulfillment(
+    """
+    Parameters for ConfirmFulfillment
+    """
+    input: ConfirmFulfillmentInput!
+  ): ConfirmFulfillmentPayload
+  confirmPickup(
+    """
+    Parameters for ConfirmPickup
+    """
+    input: ConfirmPickupInput!
+  ): ConfirmPickupPayload
+  createInquiryOfferOrderWithArtwork(
+    """
+    Parameters for CreateInquiryOfferOrderWithArtwork
+    """
+    input: CreateInquiryOfferOrderWithArtworkInput!
+  ): CreateInquiryOfferOrderWithArtworkPayload
+  createOfferOrderWithArtwork(
+    """
+    Parameters for CreateOfferOrderWithArtwork
+    """
+    input: CreateOfferOrderWithArtworkInput!
+  ): CreateOfferOrderWithArtworkPayload
+  createOrderWithArtwork(
+    """
+    Parameters for CreateOrderWithArtwork
+    """
+    input: CreateOrderWithArtworkInput!
+  ): CreateOrderWithArtworkPayload
+  fixFailedPayment(
+    """
+    Parameters for FixFailedPayment
+    """
+    input: FixFailedPaymentInput!
+  ): FixFailedPaymentPayload
 
   """
   Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   """
-  fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload
-  rejectOrder(input: RejectOrderInput!): RejectOrderPayload
-  sellerAcceptOffer(input: SellerAcceptOfferInput!): SellerAcceptOfferPayload
-  sellerAcceptProvisionalOffer(input: SellerAcceptProvisionalOfferInput!): SellerAcceptProvisionalOfferPayload
-  sellerCounterOffer(input: SellerCounterOfferInput!): SellerCounterOfferPayload
-  sellerRejectOffer(input: SellerRejectOfferInput!): SellerRejectOfferPayload
-  setPayment(input: SetPaymentInput!): SetPaymentPayload
-  setShipping(input: SetShippingInput!): SetShippingPayload
-  submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-  submitOrderWithOffer(input: SubmitOrderWithOfferInput!): SubmitOrderWithOfferPayload
-  submitPendingOffer(input: SubmitPendingOfferInput!): SubmitPendingOfferPayload
+  fulfillAtOnce(
+    """
+    Parameters for FulfillAtOnce
+    """
+    input: FulfillAtOnceInput!
+  ): FulfillAtOncePayload
+  rejectOrder(
+    """
+    Parameters for RejectOrder
+    """
+    input: RejectOrderInput!
+  ): RejectOrderPayload
+  sellerAcceptOffer(
+    """
+    Parameters for SellerAcceptOffer
+    """
+    input: SellerAcceptOfferInput!
+  ): SellerAcceptOfferPayload
+  sellerAcceptProvisionalOffer(
+    """
+    Parameters for SellerAcceptProvisionalOffer
+    """
+    input: SellerAcceptProvisionalOfferInput!
+  ): SellerAcceptProvisionalOfferPayload
+  sellerCounterOffer(
+    """
+    Parameters for SellerCounterOffer
+    """
+    input: SellerCounterOfferInput!
+  ): SellerCounterOfferPayload
+  sellerRejectOffer(
+    """
+    Parameters for SellerRejectOffer
+    """
+    input: SellerRejectOfferInput!
+  ): SellerRejectOfferPayload
+  setPayment(
+    """
+    Parameters for SetPayment
+    """
+    input: SetPaymentInput!
+  ): SetPaymentPayload
+  setShipping(
+    """
+    Parameters for SetShipping
+    """
+    input: SetShippingInput!
+  ): SetShippingPayload
+  submitOrder(
+    """
+    Parameters for SubmitOrder
+    """
+    input: SubmitOrderInput!
+  ): SubmitOrderPayload
+  submitOrderWithOffer(
+    """
+    Parameters for SubmitOrderWithOffer
+    """
+    input: SubmitOrderWithOfferInput!
+  ): SubmitOrderWithOfferPayload
+  submitPendingOffer(
+    """
+    Parameters for SubmitPendingOffer
+    """
+    input: SubmitPendingOfferInput!
+  ): SubmitPendingOfferPayload
 }
 
 """
