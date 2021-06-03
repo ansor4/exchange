@@ -18,6 +18,7 @@ class Types::OfferType < Types::BaseObject
   field :has_definite_total, Boolean, null: false, description: 'True when a all the fees (shipping/tax) were calculated for the offer'
   field :offer_amount_changed, Boolean, null: false, description: 'Only false when previous offer has the same amount.'
   field :defines_total, Boolean, null: false, description: 'True when this offer fills in the missing fees from the previous one'
+  field :buyer_offer_action_type, Types::BuyerOfferActionEnum, null: true, description: 'Type of action buyer needs to perform in response to the offer'
   field :note, String, null: true
   field :currency_code, String, null: false
 
