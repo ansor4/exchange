@@ -208,12 +208,12 @@ enum BuyerOfferActionEnum {
   PROVISIONAL_OFFER_ACCEPTED
 
   """
-  Buyer recieved a counter offer
+  Buyer received a counter offer
   """
   RECEIVED_OFFER
 
   """
-  Buyer received a counter offer needs to confrim tax and shipping
+  Buyer received a counter offer needs to confirm tax and shipping
   """
   RECEIVED_OFFER_CONFIRM_NEEDED
 }
