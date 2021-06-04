@@ -81,8 +81,9 @@ class Offer < ApplicationRecord
       # Offer accepted. This appears when collector confirms totals on an accepted provisional offer
       return 'PROVISIONAL_OFFER_ACCEPTED' if defines_total?
 
-      # either the total was defined previously or wasn't provisional
-      'OFFER_ACCEPTED'
+      # TODO: when !define_total? either the total was defined previously or wasn't provisional
+      # https://artsy.slack.com/archives/C9YNS4X32/p1622823005435800?thread_ts=1622739509.401800&cid=C9YNS4X32
+
     end
   end
 end

@@ -246,9 +246,7 @@ RSpec.describe Offer, type: :model do
         end
         context 'does not define total' do
           let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
-          it 'returns offer accepted' do
-            expect(offer.buyer_offer_action_type).to eq('OFFER_ACCEPTED')
-          end
+          it_behaves_like 'no action needed'
         end
       end
     end
