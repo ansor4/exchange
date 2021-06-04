@@ -60,6 +60,7 @@ describe Api::GraphqlController, type: :request do
                         hasDefiniteTotal
                         definesTotal
                         offerAmountChanged
+                        buyerOfferActionType
                       }
                     }
                     ... on OrderStateChangedEvent {
@@ -212,6 +213,7 @@ describe Api::GraphqlController, type: :request do
         expect(buyer_offer.offer.has_definite_total).to be false
         expect(buyer_offer.offer.defines_total).to be false
         expect(buyer_offer.offer.offer_amount_changed).to be false
+        expect(buyer_offer.offer.buyer_offer_action_type).to be nil
 
         expect(seller_offer.offer.from_participant).to eq 'SELLER'
         expect(seller_offer.offer.amount_cents).to be 100_00
@@ -220,6 +222,7 @@ describe Api::GraphqlController, type: :request do
         expect(seller_offer.offer.has_definite_total).to be true
         expect(seller_offer.offer.defines_total).to be true
         expect(seller_offer.offer.offer_amount_changed).to be false
+        expect(seller_offer.offer.buyer_offer_action_type).to eq 'OFFER_ACCEPTED_CONFIRM_NEEDED'
       end
       it 'schedules notification events with the correct flags' do
         # TODO: sends correct events to pulse
