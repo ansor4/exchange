@@ -4,6 +4,7 @@ describe ARTA::Quote do
   describe '.formatted_post_params' do
     let(:order) { Fabricate(:order, shipping_address_line1: '332 Prospect St', shipping_address_line2: '2nd floor', shipping_city: 'Niagara Falls', shipping_region: 'NY', shipping_country: 'US', shipping_postal_code: '14303', buyer_phone_number: '4517777777') }
     let(:line_item) { Fabricate(:line_item, order: order) }
+    # rubocop:disable Naming/VariableNumber
     let(:artwork) do
       {
         title: 'dog in the fog',
@@ -29,6 +30,7 @@ describe ARTA::Quote do
         }
       }
     end
+    # rubocop:enable Naming/VariableNumber
     let(:buyer) { { name: 'Pinky Pie', email: 'pinky@pie.com' } }
     let(:service) { described_class.new(artwork, line_item) }
     # rubocop:disable Naming/VariableNumber
