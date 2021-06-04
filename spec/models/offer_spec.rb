@@ -164,11 +164,15 @@ RSpec.describe Offer, type: :model do
     let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, **previous_offer_from) }
     let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from) }
 
-    context 'when not responding to a previous offer' do
-      let(:previous_offer) { nil }
-      it 'returns false' do
+    shared_examples 'no action needed' do
+      it 'returns nil' do
         expect(offer.buyer_offer_action_type).to be(nil)
       end
+    end
+
+    context 'when not responding to a previous offer' do
+      let(:previous_offer) { nil }
+      it_behaves_like 'no action needed'
     end
     context 'order state is submitted' do
       context 'last offer is from seller' do
@@ -188,9 +192,8 @@ RSpec.describe Offer, type: :model do
         context 'does not define total' do
           let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
           context 'without changing the amount' do
-            it 'is impossible. returns nil' do
-              expect(offer.buyer_offer_action_type).to be(nil)
-            end
+            # impossible
+            it_behaves_like 'no action needed'
           end
           context 'changing the amount' do
             let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from_seller) }
@@ -201,11 +204,27 @@ RSpec.describe Offer, type: :model do
         end
       end
       context 'last offer is from buyer' do
+        # buyer has just placed and offer so no action is needed.
         let(:offer_from) { offer_from_buyer }
         let(:previous_offer_from) { offer_from_seller }
-        it 'returns nil because no action from buyer is needed' do
-          # TODO: test for all variations?
-          expect(offer.buyer_offer_action_type).to be(nil)
+        context 'offer defines total' do
+          context 'without changing the amount' do
+            it_behaves_like 'no action needed'
+          end
+          context 'changing the amount' do
+            let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from) }
+            it_behaves_like 'no action needed'
+          end
+        end
+        context 'does not define total' do
+          let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
+          context 'without changing the amount' do
+            it_behaves_like 'no action needed'
+          end
+          context 'changing the amount' do
+            let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from) }
+            it_behaves_like 'no action needed'
+          end
         end
       end
     end
@@ -233,26 +252,6 @@ RSpec.describe Offer, type: :model do
         end
       end
     end
-
-    # context 'when previous offer has definite total' do
-    #   let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents) }
-    #   it 'returns false' do
-    #     expect(offer.buyer_offer_action_type).to be(false)
-    #   end
-    # end
-
-    # context 'when new offer does not have definite total' do
-    #   let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: amount_cents, shipping_total_cents: nil, tax_total_cents: nil) }
-    #   it 'returns false' do
-    #     expect(offer.buyer_offer_action_type).to be(false)
-    #   end
-    # end
-
-    # context 'when previous offer does not have definite total and this one has' do
-    #   it 'returns true' do
-    #     expect(offer.buyer_offer_action_type).to be(true)
-    #   end
-    # end
   end
 
   describe '#scopes' do
