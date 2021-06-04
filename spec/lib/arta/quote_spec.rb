@@ -22,6 +22,9 @@ describe ARTA::Quote do
           state: 'BE',
           country: 'DE',
           postal_code: '13409'
+        },
+        partner: {
+          name: 'Partner Name'
         }
       }
     end
@@ -39,7 +42,7 @@ describe ARTA::Quote do
             country: 'US',
             postal_code: '14303',
             region: 'NY',
-            title: 'Pinky Pie 06/03/2021 11:15'
+            title: 'Pinky Pie'
           },
           objects: [{ depth: 2, height: 30, subtype: 'painting_unframed', unit_of_measurement: 'cm', value: 100.0, value_currency: 'EUR', weight: 2, weight_unit: 'KG', width: 25 }],
           origin:
@@ -50,13 +53,12 @@ describe ARTA::Quote do
             country: 'DE',
             postal_code: '13409',
             region: 'BE',
-            title: 'dog in the fog 06/03/2021 11:15'
+            title: 'Partner Name'
           }
         } }
     end
     # rubocop:enable Naming/VariableNumber
     before do
-      Timecop.freeze(Time.zone.parse('03.06.2021 11:15'))
       allow(Gravity).to receive(:get_artwork).and_return(artwork)
       allow(Gravity).to receive(:get_user).and_return(buyer)
       allow(ARTA::Client).to receive(:post).and_return(true)

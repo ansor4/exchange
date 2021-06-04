@@ -83,7 +83,7 @@ module ARTA
 
     def buyer_info
       {
-        title: Time.zone.now.strftime("#{buyer[:name]} %m/%d/%Y %H:%M"),
+        title: buyer[:name],
         address_line_1: order.shipping_address_line1,
         city: order.shipping_city,
         region: order.shipping_region,
@@ -101,7 +101,7 @@ module ARTA
 
     def artwork_origin_location_and_contact_info
       {
-        title: Time.zone.now.strftime("#{artwork[:title]} %m/%d/%Y %H:%M"),
+        title: artwork[:partner][:name],
         address_line_1: artwork[:location][:address],
         city: artwork[:location][:city],
         region: artwork[:location][:state],
