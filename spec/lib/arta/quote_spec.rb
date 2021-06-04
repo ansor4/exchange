@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe ARTA::Quote do
   describe '.formatted_post_params' do
-    let(:order) { Fabricate(:order, shipping_address_line1: '332 Prospect St', shipping_city: 'Niagara Falls', shipping_region: 'NY', shipping_country: 'US', shipping_postal_code: '14303', buyer_phone_number: '4517777777') }
+    let(:order) { Fabricate(:order, shipping_address_line1: '332 Prospect St', shipping_address_line2: '2nd floor', shipping_city: 'Niagara Falls', shipping_region: 'NY', shipping_country: 'US', shipping_postal_code: '14303', buyer_phone_number: '4517777777') }
     let(:line_item) { Fabricate(:line_item, order: order) }
     let(:artwork) do
       {
@@ -18,6 +18,7 @@ describe ARTA::Quote do
         shipping_weight_metric: 'KG',
         location: {
           address: 'dog street 1',
+          address_2: '1st floor',
           city: 'Berlin',
           state: 'BE',
           country: 'DE',
@@ -37,6 +38,7 @@ describe ARTA::Quote do
           destination:
           {
             address_line_1: '332 Prospect St',
+            address_line_2: '2nd floor',
             city: 'Niagara Falls',
             contacts: [{ email_address: 'pinky@pie.com', name: 'Pinky Pie', phone_number: '4517777777' }],
             country: 'US',
@@ -48,6 +50,7 @@ describe ARTA::Quote do
           origin:
           {
             address_line_1: 'dog street 1',
+            address_line_2: '1st floor',
             city: 'Berlin',
             contacts: [{ email_address: 'partner@test.com', name: 'Artsy Partner', phone_number: '6313667777' }],
             country: 'DE',

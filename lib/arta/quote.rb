@@ -85,6 +85,7 @@ module ARTA
       {
         title: buyer[:name],
         address_line_1: order.shipping_address_line1,
+        address_line_2: order.shipping_address_line2,
         city: order.shipping_city,
         region: order.shipping_region,
         country: order.shipping_country,
@@ -103,6 +104,7 @@ module ARTA
       {
         title: artwork[:partner][:name],
         address_line_1: artwork[:location][:address],
+        address_line_2: artwork[:location][:address_2],
         city: artwork[:location][:city],
         region: artwork[:location][:state],
         country: artwork[:location][:country],
