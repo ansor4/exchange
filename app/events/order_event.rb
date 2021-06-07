@@ -13,6 +13,7 @@ class OrderEvent < Events::BaseEvent
     external_charge_id
     fulfilled_by_admin_id
     fulfillment_type
+    impulse_conversation_id
     items_total_cents
     mode
     seller_id

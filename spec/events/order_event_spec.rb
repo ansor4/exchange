@@ -29,6 +29,7 @@ describe OrderEvent, type: :events do
       currency_code: 'usd',
       shipping_total_cents: 50,
       tax_total_cents: 30,
+      impulse_conversation_id: '12345',
       items_total_cents: 300,
       buyer_total_cents: 380,
       state: 'submitted',
@@ -94,6 +95,7 @@ describe OrderEvent, type: :events do
         expect(event.properties[:fulfillment_type]).to eq Order::SHIP
         expect(event.properties[:seller_id]).to eq seller_id
         expect(event.properties[:seller_type]).to eq 'gallery'
+        expect(event.properties[:impulse_conversation_id]).to eq '12345'
         expect(event.properties[:items_total_cents]).to eq 300
         expect(event.properties[:shipping_total_cents]).to eq 50
         expect(event.properties[:tax_total_cents]).to eq 30
