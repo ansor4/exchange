@@ -48,15 +48,20 @@ module ARTA
     end
 
     def artwork_details
+      # artwork[:framed_width], framed_height, framed_depth, framed_metric, framed_diameter
       {
         subtype: format_artwork_type(artwork[:category], artwork[:framed]),
-        unit_of_measurement: 'cm',
-        height: artwork[:height_cm] || artwork[:diameter_cm],
-        width: artwork[:width_cm] || artwork[:diameter_cm],
-        depth: artwork[:depth_cm],
+        unit_of_measurement: artwork[:framed_metric] || 'cm',
+        height: dimensions_based_on_frame('height', artwork[:framed]) || artwork[:diameter_cm],
+        width: dimensions_based_on_frame('width', artwork[:framed]) || artwork[:diameter_cm],
+        depth: dimensions_based_on_frame('depth', artwork[:framed]),
         value: convert_to_dollars,
         value_currency: artwork[:price_currency]
       }.merge(shipping_weight_and_metric).compact
+    end
+
+    def dimensions_based_on_frame(measurement, framed)
+      framed ? artwork["framed_#{measurement}".to_sym] : artwork["#{measurement}_cm".to_sym]
     end
 
     def shipping_weight_and_metric
