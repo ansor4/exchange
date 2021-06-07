@@ -88,14 +88,18 @@ describe ARTA::Quote do
         context 'when artwork is framed' do
           before do
             artwork[:framed] = true
+            artwork[:framed_width] = 12
+            artwork[:framed_height] = 13
+            artwork[:framed_depth] = 2
           end
 
           it 'returns properly formatted object parameter' do
             resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
-            expect(resolved_post_params[:height]).to eq(11.0)
+            expect(resolved_post_params[:height]).to eq(13.0)
+            expect(resolved_post_params[:depth]).to eq(2)
             expect(resolved_post_params[:subtype]).to eq('photograph_framed')
             expect(resolved_post_params[:unit_of_measurement]).to eq('cm')
-            expect(resolved_post_params[:width]).to eq(10.7)
+            expect(resolved_post_params[:width]).to eq(12.0)
             expect(resolved_post_params[:value]).to eq(300)
           end
         end
