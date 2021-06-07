@@ -86,7 +86,7 @@ describe ARTA::Quote do
         context 'when artwork is framed' do
           before do
             artwork[:framed] = true
-            artwork[:framed_width] = 12
+            artwork[:framed_diameter] = 12
             artwork[:framed_height] = 13
             artwork[:framed_depth] = 3
           end
