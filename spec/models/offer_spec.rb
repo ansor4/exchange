@@ -179,13 +179,13 @@ RSpec.describe Offer, type: :model do
         context 'offer defines total' do
           context 'without changing the amount' do
             it 'returns order accepted confirm needed' do
-              expect(offer.buyer_offer_action_type).to eq('OFFER_ACCEPTED_CONFIRM_NEEDED')
+              expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_ACCEPTED_CONFIRM_NEEDED)
             end
           end
           context 'changing the amount' do
             let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from_seller) }
             it 'returns order received confirm needed' do
-              expect(offer.buyer_offer_action_type).to eq('OFFER_RECEIVED_CONFIRM_NEEDED')
+              expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_RECEIVED_CONFIRM_NEEDED)
             end
           end
         end
@@ -198,7 +198,7 @@ RSpec.describe Offer, type: :model do
           context 'changing the amount' do
             let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from_seller) }
             it 'returns offer received' do
-              expect(offer.buyer_offer_action_type).to eq('OFFER_RECEIVED')
+              expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_RECEIVED)
             end
           end
         end
@@ -235,19 +235,19 @@ RSpec.describe Offer, type: :model do
         let(:offer_from) { offer_from_buyer }
         let(:previous_offer_from) { offer_from_seller }
         it 'returns offer accepted' do
-          expect(offer.buyer_offer_action_type).to eq('OFFER_ACCEPTED')
+          expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_ACCEPTED)
         end
       end
       context 'last offer is from the seller' do
         context 'offer defines total' do
           it 'returns provisional offer accepted' do
-            expect(offer.buyer_offer_action_type).to eq('PROVISIONAL_OFFER_ACCEPTED')
+            expect(offer.buyer_offer_action_type).to eq(Offer::PROVISIONAL_OFFER_ACCEPTED)
           end
         end
         context 'does not define total' do
           let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
           it 'returns offer accepted' do
-            expect(offer.buyer_offer_action_type).to eq('OFFER_ACCEPTED')
+            expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_ACCEPTED)
           end
         end
       end

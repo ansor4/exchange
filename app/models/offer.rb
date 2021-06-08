@@ -3,6 +3,15 @@ class Offer < ApplicationRecord
 
   EXPIRATION = 3.days.freeze
 
+  OFFER_ACTIONS = [
+    PAYMENT_FAILED = 'PAYMENT_FAILED'.freeze,
+    OFFER_RECEIVED_CONFIRM_NEEDED = 'OFFER_RECEIVED_CONFIRM_NEEDED'.freeze,
+    OFFER_ACCEPTED_CONFIRM_NEEDED = 'OFFER_ACCEPTED_CONFIRM_NEEDED'.freeze,
+    OFFER_RECEIVED = 'OFFER_RECEIVED'.freeze,
+    OFFER_ACCEPTED = 'OFFER_ACCEPTED'.freeze,
+    PROVISIONAL_OFFER_ACCEPTED = 'PROVISIONAL_OFFER_ACCEPTED'.freeze
+  ].freeze
+
   belongs_to :order
   belongs_to :responds_to, class_name: 'Offer', optional: true
 
@@ -63,26 +72,26 @@ class Offer < ApplicationRecord
   end
 
   def buyer_offer_action_type
-    return 'PAYMENT_FAILED' if order.last_transaction_failed?
+    return Offer::PAYMENT_FAILED if order.last_transaction_failed?
 
     if order.state == Order::SUBMITTED && from_participant == Order::SELLER
       if defines_total?
         # provisional inquery checkout offer scenarios where metadata was initially missing
-        return 'OFFER_RECEIVED_CONFIRM_NEEDED' if offer_amount_changed?
+        return Offer::OFFER_RECEIVED_CONFIRM_NEEDED if offer_amount_changed?
 
-        'OFFER_ACCEPTED_CONFIRM_NEEDED'
+        Offer::OFFER_ACCEPTED_CONFIRM_NEEDED
       elsif offer_amount_changed?
-        'OFFER_RECEIVED'
+        Offer::OFFER_RECEIVED
       end
     # regular counter offer. either a definite offer on artwork with all metadata, or a provisional offer but metadata was provided in previous back and forth
     elsif order.state == Order::APPROVED && from_participant == Order::BUYER
-      'OFFER_ACCEPTED'
+      Offer::OFFER_ACCEPTED
     elsif order.state == Order::APPROVED && from_participant == Order::SELLER
       # Offer accepted. This appears when collector confirms totals on an accepted provisional offer
-      return 'PROVISIONAL_OFFER_ACCEPTED' if defines_total?
+      return Offer::PROVISIONAL_OFFER_ACCEPTED if defines_total?
 
       # either the total was defined previously or wasn't provisional
-      'OFFER_ACCEPTED'
+      Offer::OFFER_ACCEPTED
     end
   end
 end

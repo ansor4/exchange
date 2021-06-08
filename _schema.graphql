@@ -193,9 +193,19 @@ enum BuyerOfferActionEnum {
   OFFER_ACCEPTED
 
   """
-  Buyer's offer accepted needs to confirm tax and shipping
+  Buyer's offer accepted, needs to confirm tax and shipping
   """
   OFFER_ACCEPTED_CONFIRM_NEEDED
+
+  """
+  Buyer received a counter offer
+  """
+  OFFER_RECEIVED
+
+  """
+  Buyer received a counter, offer needs to confirm tax and shipping
+  """
+  OFFER_RECEIVED_CONFIRM_NEEDED
 
   """
   Buyer's payment failed
@@ -206,16 +216,6 @@ enum BuyerOfferActionEnum {
   Provisional offer is accepted and tax/shipping confirmed
   """
   PROVISIONAL_OFFER_ACCEPTED
-
-  """
-  Buyer received a counter offer
-  """
-  RECEIVED_OFFER
-
-  """
-  Buyer received a counter offer needs to confirm tax and shipping
-  """
-  RECEIVED_OFFER_CONFIRM_NEEDED
 }
 
 """

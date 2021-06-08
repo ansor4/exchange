@@ -225,7 +225,7 @@ describe Api::GraphqlController, type: :request do
         expect(seller_offer.offer.defines_total).to be true
         expect(seller_offer.offer.offer_amount_changed).to be false
 
-        expect(order.buyer_action).to eq 'OFFER_ACCEPTED_CONFIRM_NEEDED'
+        expect(order.buyer_action).to eq Offer::OFFER_ACCEPTED_CONFIRM_NEEDED
       end
       it 'schedules notification events with the correct flags' do
         # TODO: sends correct events to pulse
