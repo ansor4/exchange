@@ -48,6 +48,9 @@ describe Api::GraphqlController, type: :request do
                 order {
                   id
                   state
+                  ... on OfferOrder {
+                    buyerAction
+                  }
                   orderHistory {
                     __typename
                     ... on OfferSubmittedEvent {
@@ -60,7 +63,6 @@ describe Api::GraphqlController, type: :request do
                         hasDefiniteTotal
                         definesTotal
                         offerAmountChanged
-                        buyerOfferActionType
                       }
                     }
                     ... on OrderStateChangedEvent {
@@ -201,7 +203,8 @@ describe Api::GraphqlController, type: :request do
 
       it 'creates order history records for the last two offers' do
         response = client.execute(mutation, seller_accept_provisional_offer_input)
-        offer_events = response.data.seller_accept_provisional_offer.order_or_error.order.order_history.last(2)
+        order = response.data.seller_accept_provisional_offer.order_or_error.order
+        offer_events = order.order_history.last(2)
 
         buyer_offer = offer_events[0]
         seller_offer = offer_events[1]
@@ -213,7 +216,6 @@ describe Api::GraphqlController, type: :request do
         expect(buyer_offer.offer.has_definite_total).to be false
         expect(buyer_offer.offer.defines_total).to be false
         expect(buyer_offer.offer.offer_amount_changed).to be false
-        expect(buyer_offer.offer.buyer_offer_action_type).to be nil
 
         expect(seller_offer.offer.from_participant).to eq 'SELLER'
         expect(seller_offer.offer.amount_cents).to be 100_00
@@ -222,7 +224,8 @@ describe Api::GraphqlController, type: :request do
         expect(seller_offer.offer.has_definite_total).to be true
         expect(seller_offer.offer.defines_total).to be true
         expect(seller_offer.offer.offer_amount_changed).to be false
-        expect(seller_offer.offer.buyer_offer_action_type).to eq 'OFFER_ACCEPTED_CONFIRM_NEEDED'
+
+        expect(order.buyer_action).to eq 'OFFER_ACCEPTED_CONFIRM_NEEDED'
       end
       it 'schedules notification events with the correct flags' do
         # TODO: sends correct events to pulse

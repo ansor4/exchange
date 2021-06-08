@@ -831,11 +831,6 @@ An Offer
 """
 type Offer {
   amountCents: Int!
-
-  """
-  Type of action buyer needs to perform in response to the offer
-  """
-  buyerOfferActionType: BuyerOfferActionEnum
   buyerTotalCents: Int
   createdAt: DateTime!
   creatorId: String!
@@ -905,6 +900,11 @@ type OfferEdge {
 type OfferOrder implements Order {
   awaitingResponseFrom: OrderParticipantEnum
   buyer: OrderPartyUnion!
+
+  """
+  Type of action buyer needs to perform in response to the offer
+  """
+  buyerAction: BuyerOfferActionEnum
   buyerPhoneNumber: String
   buyerTotalCents: Int
   code: String!

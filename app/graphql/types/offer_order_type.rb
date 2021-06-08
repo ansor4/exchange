@@ -9,6 +9,7 @@ class Types::OfferOrderType < Types::BaseObject
   field :my_last_offer, Types::OfferType, null: true
   field :awaiting_response_from, Types::OrderParticipantEnum, null: true
   field :impulse_conversation_id, String, null: true
+  field :buyer_action, Types::BuyerOfferActionEnum, null: true, description: 'Type of action buyer needs to perform in response to the offer'
 
   def offers(**args)
     offers = object.offers.submitted
@@ -20,5 +21,11 @@ class Types::OfferOrderType < Types::BaseObject
     return unless context[:current_user][:id]
 
     object.offers.where(creator_id: context[:current_user][:id]).order(created_at: :desc).first
+  end
+
+  def buyer_action
+    return if object.mode == Order::BUY
+
+    object&.last_offer&.buyer_offer_action_type
   end
 end
