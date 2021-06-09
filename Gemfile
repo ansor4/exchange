@@ -28,6 +28,7 @@ gem 'paper_trail'
 gem 'sentry-raven'
 gem 'sidekiq', '<6' # for sending emails in the background (<6 necessary for Redis 3 compatibility)
 gem 'stripe'
+gem 'strong_migrations' # automate detection of potentially dangerous migrations
 gem 'taxjar-ruby', require: 'taxjar'
 gem 'tzinfo-data' # overrides system TZ database
 

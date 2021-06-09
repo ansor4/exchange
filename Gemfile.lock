@@ -433,6 +433,8 @@ GEM
       dante (>= 0.2.0)
       multi_json (~> 1.0)
       stripe (> 5, < 6)
+    strong_migrations (0.7.6)
+      activerecord (>= 5)
     taxjar-ruby (3.0.0)
       addressable (~> 2.3)
       http (>= 4.3, < 5.0)
@@ -504,6 +506,7 @@ DEPENDENCIES
   simplecov
   stripe
   stripe-ruby-mock
+  strong_migrations
   taxjar-ruby
   timecop
   tzinfo-data
