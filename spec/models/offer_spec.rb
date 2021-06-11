@@ -151,6 +151,109 @@ RSpec.describe Offer, type: :model do
     end
   end
 
+  describe '#buyer_offer_action_type' do
+    let(:state) { Order::SUBMITTED }
+    let(:order) { Fabricate(:order, state: state, buyer_id: 'buyer1', buyer_type: 'user', seller_id: 'seller1', seller_type: 'gallery') }
+    let!(:offer_from_seller) { { from_id: 'seller1', from_type: 'gallery' } }
+    let!(:offer_from_buyer) { { from_id: 'buyer1', from_type: 'user' } }
+    let(:shipping_total_cents) { 20 }
+    let(:amount_cents) { 100 }
+    let(:tax_total_cents) { 5 }
+    let(:offer_from) { offer_from_seller }
+    let(:previous_offer_from) { offer_from_buyer }
+    let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, **previous_offer_from) }
+    let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from) }
+
+    shared_examples 'no action needed' do
+      it 'returns nil' do
+        expect(offer.buyer_offer_action_type).to be(nil)
+      end
+    end
+
+    context 'when not responding to a previous offer' do
+      let(:previous_offer) { nil }
+      it_behaves_like 'no action needed'
+    end
+    context 'order state is submitted' do
+      context 'last offer is from seller' do
+        context 'offer defines total' do
+          context 'without changing the amount' do
+            it 'returns order accepted confirm needed' do
+              expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_ACCEPTED_CONFIRM_NEEDED)
+            end
+          end
+          context 'changing the amount' do
+            let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from_seller) }
+            it 'returns order received confirm needed' do
+              expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_RECEIVED_CONFIRM_NEEDED)
+            end
+          end
+        end
+        context 'does not define total' do
+          let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
+          context 'without changing the amount' do
+            # impossible
+            it_behaves_like 'no action needed'
+          end
+          context 'changing the amount' do
+            let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from_seller) }
+            it 'returns offer received' do
+              expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_RECEIVED)
+            end
+          end
+        end
+      end
+      context 'last offer is from buyer' do
+        # buyer has just placed and offer so no action is needed.
+        let(:offer_from) { offer_from_buyer }
+        let(:previous_offer_from) { offer_from_seller }
+        context 'offer defines total' do
+          context 'without changing the amount' do
+            it_behaves_like 'no action needed'
+          end
+          context 'changing the amount' do
+            let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from) }
+            it_behaves_like 'no action needed'
+          end
+        end
+        context 'does not define total' do
+          let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
+          context 'without changing the amount' do
+            it_behaves_like 'no action needed'
+          end
+          context 'changing the amount' do
+            let(:offer) { Fabricate(:offer, order: order, responds_to: previous_offer, amount_cents: 200, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **offer_from) }
+            it_behaves_like 'no action needed'
+          end
+        end
+      end
+    end
+
+    context 'order state is approved' do
+      let(:state) { Order::APPROVED }
+      context 'last offer is from the buyer' do
+        let(:offer_from) { offer_from_buyer }
+        let(:previous_offer_from) { offer_from_seller }
+        it 'returns offer accepted' do
+          expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_ACCEPTED)
+        end
+      end
+      context 'last offer is from the seller' do
+        context 'offer defines total' do
+          it 'returns provisional offer accepted' do
+            expect(offer.buyer_offer_action_type).to eq(Offer::PROVISIONAL_OFFER_ACCEPTED)
+          end
+        end
+        context 'does not define total' do
+          let(:previous_offer) { Fabricate(:offer, order: order, amount_cents: amount_cents, shipping_total_cents: shipping_total_cents, tax_total_cents: tax_total_cents, **previous_offer_from) }
+          it 'returns offer accepted' do
+            expect(offer.buyer_offer_action_type).to eq(Offer::OFFER_ACCEPTED)
+          end
+        end
+      end
+    end
+  end
+
   describe '#scopes' do
     describe 'submitted' do
       let!(:offer1) { Fabricate(:offer, submitted_at: Time.zone.now) }
