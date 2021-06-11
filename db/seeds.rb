@@ -9,4 +9,3 @@
 order = Order.create(state: 'pending', payment_method: 'credit card', currency_code: 'USD', mode: 'offer')
 # "Test artwork" of "Commerce Test Partner". It is available on production so it will be copied over to staging each week.
 LineItem.create(artwork_id: '60a675b08287e200135a4784', artwork_version_id: '60c27e0cf448330013d340a5', order: order)
-
