@@ -19,9 +19,10 @@ Exchange is responsible for the various types of e-commerce interactions availab
   $ git clone git@github.com:artsy/exchange.git
   ```
 
-- Install bundles:
-  ```
-  $ bundle install
+- Read and run setup script:
+  ```sh
+  cat bin/setup
+  bin/setup
   ```
 
 ## Tests
@@ -34,14 +35,7 @@ $ bundle exec rspec
 
 ## Starting Server
 
-If this is your first time starting the app, make sure your database is setup first by running:
-
-```shell
-rails db:create
-rails db:setup
-```
-
-Then run Procfile.dev via foreman to start the web (rails) and worker (sidekiq)
+Run Procfile.dev via foreman to start the web (rails) and worker (sidekiq)
 services:
 
 ```bash

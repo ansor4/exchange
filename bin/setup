@@ -29,13 +29,21 @@ if ! command -v bundler > /dev/null; then
 fi
 
 # STEP 2
-printf "${CLEAR_LINE}[2/${STEPS}]  installing gems"
-bundle install > /dev/null
-gem install foreman
+ruby_version=`cat .ruby-version`
+printf "${CLEAR_LINE}[2/${STEPS}]  configuring Ruby $ruby_version"
+if command -v rbenv >/dev/null; then # skip rbenv steps if not available (RVM user?)
+  if ! rbenv versions | grep -Fq "$ruby_version"; then
+    rbenv install -s "$ruby_version"
+  fi
+
+  eval "$(rbenv init - --no-rehash)"
+  rbenv shell "$ruby_version"
+fi
 
 # STEP 3
-printf "${CLEAR_LINE}[3/${STEPS}]  adding remotes"
-git remote add upstream git@github.com:artsy/exchange.git
+printf "${CLEAR_LINE}[3/${STEPS}]  installing gems"
+bundle install > /dev/null
+gem install foreman
 
 # STEP 4
 printf "${CLEAR_LINE}[4/${STEPS}]  fetching remotes"
@@ -43,7 +51,7 @@ git fetch --all --quiet > /dev/null
 
 # STEP 5
 printf "${CLEAR_LINE}[5/${STEPS}]  database setup"
-bundle exec rake db:create db:migrate > /dev/null
+bundle exec rake db:create db:setup > /dev/null
 
 # FINISH
 printf "${CLEAR_LINE}[${STEPS}/${STEPS}]${GREEN}  finished!${NO_COLOR}\n"
