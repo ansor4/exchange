@@ -50,7 +50,7 @@ module ARTA
     def artwork_details
       {
         subtype: format_artwork_type(artwork[:category], artwork[:framed]),
-        unit_of_measurement: artwork[:framed_metric] || 'cm',
+        unit_of_measurement: artwork[:framed] && artwork[:framed_metric].present? ? artwork[:framed_metric] : 'cm',
         height: artwork[:framed_height] || artwork[:framed_diameter] || artwork[:height_cm] || artwork[:diameter_cm],
         width: artwork[:framed_width] || artwork[:framed_diameter] || artwork[:width_cm] || artwork[:diameter_cm],
         depth: artwork[:framed_depth] || artwork[:depth_cm],
