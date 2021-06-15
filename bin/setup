@@ -3,7 +3,7 @@
 # Exit if any subcommand fails
 set -e
 
-STEPS=5
+STEPS=6
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -52,6 +52,12 @@ git fetch --all --quiet > /dev/null
 # STEP 5
 printf "${CLEAR_LINE}[5/${STEPS}]  database setup"
 bundle exec rake db:create db:setup > /dev/null
+
+# STEP 6
+printf "${CLEAR_LINE}[6/${STEPS}]  copying staging env (copy_env script needed)"
+if command -v copy_env > /dev/null; then
+  copy_env
+fi
 
 # FINISH
 printf "${CLEAR_LINE}[${STEPS}/${STEPS}]${GREEN}  finished!${NO_COLOR}\n"
