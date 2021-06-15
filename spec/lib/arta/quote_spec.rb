@@ -103,9 +103,10 @@ describe ARTA::Quote do
         end
       end
 
-      context 'when artwork is not framed' do
+      context 'when artwork is not framed but has inches as framed metric' do
         before do
           artwork[:framed] = false
+          artwork[:framed_metric] = 'in'
         end
 
         it 'returns proper subtype' do
@@ -114,6 +115,11 @@ describe ARTA::Quote do
           expect(resolved_post_params[:height]).to eq(30)
           expect(resolved_post_params[:depth]).to eq(2.0)
           expect(resolved_post_params[:width]).to eq(25.0)
+        end
+
+        it 'resolves framed metric to cm' do
+          resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
+          expect(resolved_post_params[:unit_of_measurement]).to eq('cm')
         end
       end
 
