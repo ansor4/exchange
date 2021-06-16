@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_11_214254) do
+ActiveRecord::Schema.define(version: 2021_06_15_102813) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -207,6 +208,7 @@ ActiveRecord::Schema.define(version: 2021_05_11_214254) do
     t.string "booked_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "status", default: "pending"
     t.index ["line_item_id"], name: "index_shipments_on_line_item_id"
   end
 

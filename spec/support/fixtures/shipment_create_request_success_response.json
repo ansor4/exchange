@@ -1,144 +1,139 @@
 {
-  "id": "9a67bc11-1d24-4986-9100-7c43f78f7bfa",
-  "url": 
-   "https://connect.shiparta.com/shipments/test-id/",
-  "total": "4.00",
-  "origin": {
-    "access_restrictions": [],
-    "address_line_1": "401 Broadway",
-    "address_line_2": null,
-    "address_line_3": null,
-    "city": "New York",
-    "contacts": [
-        {
+    "id": "9a67bc11-1d24-4986-9100-7c43f78f7bfa",
+    "url": "https://connect.shiparta.com/shipments/test-id/",
+    "total": "4.00",
+    "origin": {
+        "access_restrictions": [],
+        "address_line_1": "401 Broadway",
+        "address_line_2": null,
+        "address_line_3": null,
+        "city": "New York",
+        "contacts": [{
             "email_address": "j@test.com",
             "name": "Test User",
             "phone_number": "6313667777"
+        }],
+        "country": "US",
+        "postal_code": "10013",
+        "region": "NY",
+        "title": "Hello Gallery"
+    },
+    "status": "confirmed",
+    "packages": [{
+        "id": 284432,
+        "depth": "7.62",
+        "width": "15.24",
+        "height": "20.34",
+        "weight": "1.0",
+        "objects": [{
+            "type": "art",
+            "depth": "5.08",
+            "value": "805.00",
+            "width": "12.7",
+            "height": "17.8",
+            "images": [],
+            "weight": "1",
+            "details": {
+                "notes": null,
+                "title": "Black & White Horse",
+                "creator": "Alicia Rothman",
+                "is_cites": false,
+                "materials": [],
+                "is_fragile": false,
+                "creation_date": "2013"
+            },
+            "subtype": "painting_unframed",
+            "weight_unit": "kg",
+            "value_currency": "USD",
+            "current_packing": [],
+            "public_reference": null,
+            "internal_reference": null,
+            "unit_of_measurement": "cm"
+        }],
+        "weight_unit": "kg",
+        "handle_with_care": false,
+        "packing_materials": ["poly_cardboard"],
+        "unit_of_measurement": "cm",
+        "is_sufficiently_packed": false
+    }],
+    "schedule": {
+        "pickup_end": null,
+        "delivery_end": null,
+        "pickup_start": null,
+        "delivery_start": null
+    },
+    "services": [{
+            "name": "Condition Check (origin)",
+            "type": "handling",
+            "amount": "1.00",
+            "subtype": "condition",
+            "is_required": true,
+            "sub_subtype": "origin_condition_check",
+            "is_requested": false,
+            "amount_currency": "USD",
+            "included_services": []
+        },
+        {
+            "name": "Collection",
+            "type": "location",
+            "amount": "1.00",
+            "subtype": "collection",
+            "is_required": true,
+            "sub_subtype": "collection",
+            "is_requested": false,
+            "amount_currency": "USD",
+            "included_services": []
+        },
+        {
+            "name": "Next Day Air",
+            "type": "transport",
+            "amount": "1.00",
+            "subtype": "parcel",
+            "is_required": true,
+            "sub_subtype": "parcel",
+            "is_requested": false,
+            "amount_currency": "USD",
+            "included_services": []
+        },
+        {
+            "name": "Poly & Cardboard",
+            "type": "packing",
+            "amount": "1.00",
+            "subtype": "packing_materials",
+            "is_required": true,
+            "sub_subtype": "poly_cardboard",
+            "is_requested": false,
+            "amount_currency": "USD",
+            "included_services": []
         }
     ],
-    "country": "US",
-    "postal_code": "10013",
-    "region": "NY",
-    "title": "Hello Gallery"
-  },
-  "status": "pending",
-  "packages": 
-   [{"id": 284432,
-     "depth": "7.62",
-     "width": "15.24",
-     "height": "20.34",
-     "weight": "1.0",
-     "objects": 
-      [{"type": "art",
-        "depth": "5.08",
-        "value": "805.00",
-        "width": "12.7",
-        "height": "17.8",
-        "images": [],
-        "weight": "1",
-        "details": 
-         {"notes": null,
-          "title": "Black & White Horse",
-          "creator": "Alicia Rothman",
-          "is_cites": false,
-          "materials": [],
-          "is_fragile": false,
-          "creation_date": "2013"},
-        "subtype": "painting_unframed",
-        "weight_unit": "kg",
-        "value_currency": "USD",
-        "current_packing": [],
-        "public_reference": null,
-        "internal_reference": null,
-        "unit_of_measurement": "cm"}],
-     "weight_unit": "kg",
-     "handle_with_care": false,
-     "packing_materials": ["poly_cardboard"],
-     "unit_of_measurement": "cm",
-     "is_sufficiently_packed": false}],
-  "schedule": 
-   {
-    "pickup_end": null,
-    "delivery_end": null,
-    "pickup_start": null,
-    "delivery_start": null
-  },
-  "services": 
-   [
-     {
-       "name": "Condition Check (origin)",
-      "type": "handling",
-      "amount": "1.00",
-      "subtype": "condition",
-      "is_required": true,
-      "sub_subtype": "origin_condition_check",
-      "is_requested": false,
-      "amount_currency": "USD",
-      "included_services": []
-    },
-    {
-      "name": "Collection",
-      "type": "location",
-      "amount": "1.00",
-      "subtype": "collection",
-      "is_required": true,
-      "sub_subtype": "collection",
-      "is_requested": false,
-      "amount_currency": "USD",
-      "included_services": []
-    },
-    {
-      "name": "Next Day Air",
-     "type": "transport",
-     "amount": "1.00",
-     "subtype": "parcel",
-     "is_required": true,
-     "sub_subtype": "parcel",
-     "is_requested": false,
-     "amount_currency": "USD",
-     "included_services": []
-    },
-    {
-      "name": "Poly & Cardboard",
-      "type": "packing",
-      "amount": "1.00",
-      "subtype": "packing_materials",
-      "is_required": true,
-      "sub_subtype": "poly_cardboard",
-      "is_requested": false,
-      "amount_currency": "USD",
-      "included_services": []
-    }
-  ],
-  "tracking": [],
-  "shortcode": "ARTSY-158642",
-  "created_at": "2021-05-12T21:57:13.088974",
-  "quote_type": "parcel",
-  "updated_at": "2021-05-12T21:57:13.192965",
-  "destination": {
-    "access_restrictions": [],
-    "address_line_1": "332 Prospect St",
-    "city": "Niagara Falls",
-    "contacts": [
-        {
+    "tracking": [],
+    "shortcode": "ARTSY-158642",
+    "created_at": "2021-05-12T21:57:13.088974",
+    "quote_type": "parcel",
+    "updated_at": "2021-05-12T21:57:13.192965",
+    "destination": {
+        "access_restrictions": [],
+        "address_line_1": "332 Prospect St",
+        "city": "Niagara Falls",
+        "contacts": [{
             "email_address": "test@email.com",
             "name": "Collector Molly",
             "phone_number": "1235554444"
-        }
-    ],
-    "country": "US",
-    "postal_code": "14303",
-    "region": "NY",
-    "title": "Collector Molly"
-},
-  "object_count": 1,
-  "package_count": 1,
-  "log_request_id": "Fn5whSU14OLqZogACCvS",
-  "shipping_notes": null,
-  "total_currency": "USD",
-  "insurance_policy": null,
-  "public_reference": null,
-  "internal_reference": null,
-  "prepayment_required_total": "0.00",
-  "prepayment_required_total_currency": "USD"
+        }],
+        "country": "US",
+        "postal_code": "14303",
+        "region": "NY",
+        "title": "Collector Molly"
+    },
+    "object_count": 1,
+    "package_count": 1,
+    "log_request_id": "Fn5whSU14OLqZogACCvS",
+    "shipping_notes": null,
+    "total_currency": "USD",
+    "insurance_policy": null,
+    "public_reference": null,
+    "internal_reference": null,
+    "prepayment_required_total": "0.00",
+    "prepayment_required_total_currency": "USD"
 }

@@ -48,6 +48,7 @@ module ARTA
         booked_at: data[:created_at],
         internal_reference: data[:internal_reference],
         public_reference: data[:public_reference],
+        status: data[:status],
         response_payload: data
       )
     end

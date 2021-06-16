@@ -38,6 +38,11 @@ describe ARTA::ShippingService do
       it 'persists the correct records' do
         expect { described_class.new(line_item).book_shipment }.to change { Shipment.count }.by(1)
       end
+
+      it 'writes the correct status' do
+        shipment = described_class.new(line_item).book_shipment
+        expect(shipment.status).to eq response[:status]
+      end
     end
   end
 end
