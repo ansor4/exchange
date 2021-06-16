@@ -215,7 +215,7 @@ describe 'Inquiry Checkout happy path with missing artwork metadata', type: :req
       items_total_cents: 50000,
       buyer_total_cents: nil,
       seller_total_cents: nil,
-      transaction_fee_cents: nil,
+      transaction_fee_cents: 0,
       commission_fee_cents: 5000
     )
   end
@@ -254,8 +254,8 @@ describe 'Inquiry Checkout happy path with missing artwork metadata', type: :req
       tax_total_cents: 25_00,
       items_total_cents: 500_00,
       buyer_total_cents: 555_00,
-      seller_total_cents: 483_05,
-      transaction_fee_cents: 21_95,
+      seller_total_cents: 505_00,
+      transaction_fee_cents: 0,
       commission_fee_cents: 50_00
     )
     expect(order.last_offer).to have_attributes(
@@ -286,8 +286,8 @@ describe 'Inquiry Checkout happy path with missing artwork metadata', type: :req
       tax_total_cents: 25_00,
       buyer_total_cents: 555_00,
       commission_fee_cents: 50_00,
-      transaction_fee_cents: 21_95,
-      seller_total_cents: 483_05,
+      transaction_fee_cents: 0,
+      seller_total_cents: 505_00,
       shipping_country: 'US',
       credit_card_id: 'credit_card_1'
     )

@@ -81,8 +81,8 @@ describe Api::GraphqlController, type: :request do
         buyer_total_cents: 1000_00,
         tax_total_cents: 100_00,
         commission_fee_cents: 70_00,
-        transaction_fee_cents: 39_30,
-        seller_total_cents: 890_70,
+        transaction_fee_cents: 0,
+        seller_total_cents: 930_00,
         fulfillment_type: Order::SHIP,
         shipping_country: 'US',
         credit_card_id: 'cc-1'
@@ -108,8 +108,8 @@ describe Api::GraphqlController, type: :request do
         buyer_total_cents: 1000_00,
         tax_total_cents: 100_00,
         commission_fee_cents: 70_00,
-        transaction_fee_cents: 39_30,
-        seller_total_cents: 890_70,
+        transaction_fee_cents: 0,
+        seller_total_cents: 930_00,
         fulfillment_type: Order::SHIP,
         shipping_country: 'US',
         credit_card_id: 'cc-1'

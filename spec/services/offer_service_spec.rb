@@ -224,7 +224,7 @@ describe OfferService, type: :services do
         expect(order.shipping_total_cents).to eq 30_00
         expect(order.tax_total_cents).to eq 20_00
         expect(order.buyer_total_cents).to eq 1000_00 + 30_00 + 20_00
-        expect(order.transaction_fee_cents).to eq(offer.buyer_total_cents * 3.9 / 100 + 30)
+        expect(order.transaction_fee_cents).to eq(0)
       end
     end
 
@@ -382,7 +382,7 @@ describe OfferService, type: :services do
         expect(order.tax_total_cents).to eq 50_00
         expect(order.commission_fee_cents).to eq 200_00 * 0.8
         expect(order.buyer_total_cents).to eq 350_00
-        expect(order.transaction_fee_cents).to eq((350_00 * 3.9 / 100) + 30)
+        expect(order.transaction_fee_cents).to eq(0)
         expect(order.seller_total_cents).to eq 350_00 - order.commission_fee_cents - order.transaction_fee_cents
       end
 
@@ -393,7 +393,7 @@ describe OfferService, type: :services do
         expect(order.tax_total_cents).to eq 50_00
         expect(order.commission_fee_cents).to eq 200_00 * 0.8
         expect(order.buyer_total_cents).to eq 350_00
-        expect(order.transaction_fee_cents).to eq((350_00 * 3.9 / 100) + 30)
+        expect(order.transaction_fee_cents).to eq(0)
         expect(order.seller_total_cents).to eq 350_00 - order.commission_fee_cents - order.transaction_fee_cents
       end
 

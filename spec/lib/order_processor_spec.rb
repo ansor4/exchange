@@ -52,10 +52,10 @@ describe OrderProcessor, type: :services do
     context 'buy order' do
       it 'sets correct totals on order' do
         expect(order.reload).to have_attributes(
-          transaction_fee_cents: 39_30,
+          transaction_fee_cents: 0,
           commission_rate: 0.8,
           commission_fee_cents: 800_00,
-          seller_total_cents: 160_70
+          seller_total_cents: 200_00
         )
       end
       it 'sets correct totals on line items' do
@@ -70,10 +70,10 @@ describe OrderProcessor, type: :services do
       let(:offer) { Fabricate(:offer, order: order, amount_cents: 1000_00, shipping_total_cents: 200_00, tax_total_cents: 100_00) }
       it 'sets correct totals on order' do
         expect(order.reload).to have_attributes(
-          transaction_fee_cents: 51_00,
+          transaction_fee_cents: 0,
           commission_rate: 0.8,
           commission_fee_cents: 800_00,
-          seller_total_cents: 449_00
+          seller_total_cents: 500_00
         )
       end
       it 'does not set totals on line items' do
@@ -88,10 +88,10 @@ describe OrderProcessor, type: :services do
   describe 'reset_totals!' do
     it 'resets totals on an order' do
       order.update!(
-        transaction_fee_cents: 38_00,
+        transaction_fee_cents: 0,
         commission_rate: 0.8,
         commission_fee_cents: 800_00,
-        seller_total_cents: 462_00
+        seller_total_cents: 500_00
       )
       order_processor.reset_totals!
       expect(order.reload).to have_attributes(
@@ -124,10 +124,10 @@ describe OrderProcessor, type: :services do
     end
     it 'resets totals if totals were set on the orders' do
       order.update!(
-        transaction_fee_cents: 38_00,
+        transaction_fee_cents: 0,
         commission_rate: 0.8,
         commission_fee_cents: 800_00,
-        seller_total_cents: 462_00
+        seller_total_cents: 500_00
       )
       order_processor.instance_variable_set(:@totals_set, true)
       order_processor.revert!

@@ -208,7 +208,7 @@ describe 'Inquiry Checkout not possible because of missing artwork metadata', ty
       items_total_cents: 50000,
       buyer_total_cents: nil,
       seller_total_cents: nil,
-      transaction_fee_cents: nil,
+      transaction_fee_cents: 0,
       commission_fee_cents: 5000
     )
   end

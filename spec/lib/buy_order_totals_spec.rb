@@ -20,7 +20,7 @@ describe BuyOrderTotals do
       context 'when shipping_total_cents is 1000' do
         it 'subtracts shipping_total_cents from seller_total_cents' do
           buy_order_totals = BuyOrderTotals.new(order)
-          expect(buy_order_totals.seller_total_cents).to eq(160_31)
+          expect(buy_order_totals.seller_total_cents).to eq(20_000)
         end
       end
     end
@@ -31,7 +31,7 @@ describe BuyOrderTotals do
       context 'when shipping_total_cents is 1000' do
         it 'includes shipping_total_cents in seller_total_cents' do
           buy_order_totals = BuyOrderTotals.new(order)
-          expect(buy_order_totals.seller_total_cents).to eq(170_31)
+          expect(buy_order_totals.seller_total_cents).to eq(21_000)
         end
       end
     end
