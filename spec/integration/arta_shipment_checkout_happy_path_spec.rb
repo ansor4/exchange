@@ -203,7 +203,8 @@ describe 'Checkout with ARTA Shipment choice for Buy Now flow' do
       shipping_total_cents: 200,
       tax_total_cents: 116,
       buyer_total_cents: 100316,
-      seller_total_cents: 16174,
+      seller_total_cents: 20116,
+      transaction_fee_cents: 0,
       commission_fee_cents: 80000,
       shipping_country: 'US',
       credit_card_id: 'credit_card_1'
