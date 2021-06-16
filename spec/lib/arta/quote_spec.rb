@@ -48,6 +48,7 @@ describe ARTA::Quote do
             region: 'NY',
             title: 'Pinky Pie'
           },
+          insurance: 'arta_transit_insurance',
           objects: [{ depth: 2, height: 30, subtype: 'painting_unframed', unit_of_measurement: 'cm', value: 100.0, value_currency: 'EUR', weight: 2, weight_unit: 'KG', width: 25 }],
           origin:
           {

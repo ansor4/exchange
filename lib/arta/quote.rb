@@ -39,6 +39,7 @@ module ARTA
       {
         request: {
           destination: buyer_info,
+          insurance: 'arta_transit_insurance',
           objects: [
             artwork_details
           ],
