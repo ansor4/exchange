@@ -56,11 +56,14 @@ class OrderShipping
       shipping_postal_code: @shipping_address&.postal_code
     )
 
-    ARTA::ShippingService.new(@order.line_items.first).generate_shipping_quotes
+    @order.line_items.each do |line_item|
+      ARTA::ShippingService.new(line_item).generate_shipping_quotes
+    end
   end
 
   def select_arta_shipment_option!(selected_shipping_quote_id)
     raise Errors::ValidationError, :missing_selected_shipping_quote_id if selected_shipping_quote_id.blank?
+    raise Errors::ValidationError, :selected_shipping_quote_id_not_found unless @order.line_items.last.shipping_quotes.where(id: selected_shipping_quote_id).exists?
 
     @order.with_lock do
       @order.line_items.last.update(selected_shipping_quote_id: selected_shipping_quote_id)

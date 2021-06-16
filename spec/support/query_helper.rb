@@ -50,6 +50,48 @@ module QueryHelper
     }
   ).freeze
 
+  SELECT_ARTA_SHIPPING_OPTION = %(
+    mutation($input: SelectShippingOptionInput!) {
+      selectShippingOption(input: $input) {
+        orderOrError {
+          ... on OrderWithMutationSuccess {
+            order {
+              id
+              state
+              shippingTotalCents
+              lineItems {
+                edges {
+                  node {
+                    id
+                    priceCents
+                    listPriceCents
+                    shippingQuoteOptions {
+                      edges {
+                        node {
+                          id
+                          tier
+                          name
+                          isSelected
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          ... on OrderWithMutationFailure {
+            error {
+              code
+              data
+              type
+            }
+          }
+        }
+      }
+    }
+  ).freeze
+
   SET_CREDIT_CARD = %(
     mutation($input: SetPaymentInput!) {
       setPayment(input: $input) {

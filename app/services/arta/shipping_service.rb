@@ -31,7 +31,6 @@ module ARTA
           price_currency: quote[:total_currency]
         )
       end
-
       shipping_quote_request.save!
     end
 

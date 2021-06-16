@@ -47,6 +47,7 @@ module Errors
       offer_not_from_buyer
       offer_total_not_defined
       order_not_submitted
+      selected_shipping_quote_id_not_found
       uncommittable_action
       unknown_artwork
       unknown_edition_set

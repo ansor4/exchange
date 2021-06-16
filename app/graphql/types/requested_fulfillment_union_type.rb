@@ -12,6 +12,8 @@ class Types::Ship < Types::BaseObject
   end
 end
 
+class Types::ShipArta < Types::Ship; end
+
 class Types::Pickup < Types::BaseObject
   field :fulfillment_type, String, null: false
   field :phone_number, String, null: true
@@ -27,11 +29,13 @@ end
 
 class Types::RequestedFulfillmentUnionType < Types::BaseUnion
   description 'Represents either a shipping information or pickup'
-  possible_types Types::Ship, Types::Pickup
+  possible_types Types::Ship, Types::Pickup, Types::ShipArta
   def self.resolve_type(object, _context)
     case object.fulfillment_type
     when Order::SHIP
       Types::Ship
+    when Order::SHIP_ARTA
+      Types::ShipArta
     when Order::PICKUP
       Types::Pickup
     else

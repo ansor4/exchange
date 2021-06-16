@@ -35,6 +35,7 @@ class ShippingCalculator
   end
 
   def shipping_quote
+    # TO DO: Adjust query to only pull in price_cents
     @shipping_quote ||= ShippingQuote.find(@order.line_items.last.selected_shipping_quote_id)
   end
 

@@ -4,6 +4,7 @@ class Types::MutationType < Types::BaseObject
   field :create_offer_order_with_artwork, mutation: Mutations::CreateOfferOrderWithArtwork
   field :create_inquiry_offer_order_with_artwork, mutation: Mutations::CreateInquiryOfferOrderWithArtwork
   field :set_shipping, mutation: Mutations::SetShipping
+  field :select_shipping_option, mutation: Mutations::SelectShippingOption
   field :set_payment, mutation: Mutations::SetPayment
   field :submit_order, mutation: Mutations::SubmitOrder
   field :buyer_accept_offer, mutation: Mutations::BuyerAcceptOffer

@@ -39,6 +39,24 @@ describe Api::GraphqlController, type: :request do
                     ... on Pickup {
                       fulfillmentType
                     }
+                    ... on ShipArta {
+                      addressLine1
+                    }
+                  }
+                  lineItems {
+                    edges {
+                      node {
+                        shippingQuoteOptions {
+                          edges {
+                            node {
+                              id
+                              tier
+                              priceCurrency
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                   buyer {
                     ... on Partner {
@@ -142,6 +160,14 @@ describe Api::GraphqlController, type: :request do
           expect(@response.data.set_shipping.order_or_error.order.shipping_total_cents).to eq 0
           expect(order.reload.shipping_total_cents).to eq 0
         end
+
+        it 'does not return shipping quote options' do
+          mutation_response = client.execute(mutation, set_shipping_input)
+          shipping_quote_options = mutation_response.data.set_shipping.order_or_error.order.line_items.edges[0].node.shipping_quote_options
+
+          expect(shipping_quote_options).to eq(nil)
+        end
+
         context 'when phone number is passed' do
           let(:shipping_address) { { phoneNumber: phone_number } }
           it 'adds the buyer phone number' do
@@ -257,31 +283,43 @@ describe Api::GraphqlController, type: :request do
           end
         end
 
-        it 'sets shipping info and sales tax on the order' do
-          allow(Adapters::GravityV1).to receive(:get).with('/artwork/a-1').and_return(artwork1)
-          allow(Adapters::GravityV1).to receive(:get).with('/artwork/a-2').and_return(artwork2)
-          allow(Gravity).to receive(:fetch_partner_locations).and_return(seller_addresses)
-          response = client.execute(mutation, set_shipping_input)
-          expect(response.data.set_shipping.order_or_error.order.id).to eq order.id.to_s
-          expect(response.data.set_shipping.order_or_error.order.state).to eq 'PENDING'
-          expect(response.data.set_shipping.order_or_error).not_to respond_to(:error)
-          expect(response.data.set_shipping.order_or_error.order.requested_fulfillment.address_line1).to eq '401 Broadway'
-          expect(order.reload.fulfillment_type).to eq Order::SHIP
-          expect(order.state).to eq Order::PENDING
-          expect(order.shipping_country).to eq 'US'
-          expect(order.shipping_city).to eq 'New York'
-          expect(order.shipping_region).to eq 'NY'
-          expect(order.shipping_postal_code).to eq '10012'
-          expect(order.buyer_phone_number).to eq '00123456789'
-          expect(order.shipping_name).to eq 'Fname Lname'
-          expect(order.shipping_address_line1).to eq '401 Broadway'
-          expect(order.shipping_address_line2).to eq 'Suite 80'
-          expect(order.state_expires_at).to eq(order.state_updated_at + 2.days)
-          expect(line_items[0].reload.sales_tax_cents).to eq 116
-          expect(line_items[1].reload.sales_tax_cents).to eq 116
-          expect(line_items[0].reload.should_remit_sales_tax?).to eq false
-          expect(line_items[1].reload.should_remit_sales_tax?).to eq false
-          expect(order.tax_total_cents).to eq 232
+        context 'when successful' do
+          before do
+            allow(Adapters::GravityV1).to receive(:get).with('/artwork/a-1').and_return(artwork1)
+            allow(Adapters::GravityV1).to receive(:get).with('/artwork/a-2').and_return(artwork2)
+            allow(Gravity).to receive(:fetch_partner_locations).and_return(seller_addresses)
+          end
+
+          it 'sets shipping info and sales tax on the order' do
+            response = client.execute(mutation, set_shipping_input)
+            expect(response.data.set_shipping.order_or_error.order.id).to eq order.id.to_s
+            expect(response.data.set_shipping.order_or_error.order.state).to eq 'PENDING'
+            expect(response.data.set_shipping.order_or_error).not_to respond_to(:error)
+            expect(response.data.set_shipping.order_or_error.order.requested_fulfillment.address_line1).to eq '401 Broadway'
+            expect(order.reload.fulfillment_type).to eq Order::SHIP
+            expect(order.state).to eq Order::PENDING
+            expect(order.shipping_country).to eq 'US'
+            expect(order.shipping_city).to eq 'New York'
+            expect(order.shipping_region).to eq 'NY'
+            expect(order.shipping_postal_code).to eq '10012'
+            expect(order.buyer_phone_number).to eq '00123456789'
+            expect(order.shipping_name).to eq 'Fname Lname'
+            expect(order.shipping_address_line1).to eq '401 Broadway'
+            expect(order.shipping_address_line2).to eq 'Suite 80'
+            expect(order.state_expires_at).to eq(order.state_updated_at + 2.days)
+            expect(line_items[0].reload.sales_tax_cents).to eq 116
+            expect(line_items[1].reload.sales_tax_cents).to eq 116
+            expect(line_items[0].reload.should_remit_sales_tax?).to eq false
+            expect(line_items[1].reload.should_remit_sales_tax?).to eq false
+            expect(order.tax_total_cents).to eq 232
+          end
+
+          it 'does not return shipping quote options' do
+            mutation_response = client.execute(mutation, set_shipping_input)
+            shipping_quote_options = mutation_response.data.set_shipping.order_or_error.order.line_items.edges[0].node.shipping_quote_options
+
+            expect(shipping_quote_options).to eq(nil)
+          end
         end
 
         describe '#shipping_total_cents' do
@@ -330,6 +368,68 @@ describe Api::GraphqlController, type: :request do
                 expect(order.reload.shipping_total_cents).to eq 400_00
               end
             end
+          end
+        end
+
+        context 'when SHIP_ARTA is fulfillment type' do
+          let(:fulfillment_type) { 'SHIP_ARTA' }
+          let(:arta_api_response) do
+            JSON.parse(File.read('spec/support/fixtures/arta/quote_request_success_response.json'), { symbolize_names: true })
+          end
+
+          before do
+            expect(Adapters::GravityV1).to receive(:get).with('/artwork/a-1').and_return(artwork1)
+            expect(Adapters::GravityV1).to receive(:get).with('/artwork/a-2').and_return(artwork2)
+            expect(Adapters::GravityV1).to receive(:get).with('/user/user-id').twice.and_return({})
+
+            allow_any_instance_of(ARTA::Quote).to receive(:post).and_return(arta_api_response)
+          end
+
+          it 'returns a list of eligible shipping quotes' do
+            mutation_response = client.execute(mutation, set_shipping_input)
+            shipping_quote_options = mutation_response.data.set_shipping.order_or_error.order.line_items.edges[0].node.shipping_quote_options
+            shipping_quote_options2 = mutation_response.data.set_shipping.order_or_error.order.line_items.edges[1].node.shipping_quote_options
+
+            expect(shipping_quote_options.edges.map { |e| e.node.tier }).to match_array(%w[select parcel parcel parcel premium])
+            expect(shipping_quote_options2.edges.map { |e| e.node.tier }).to match_array(%w[select parcel parcel parcel premium])
+          end
+
+          it 'returns the correct requested fulfillment type' do
+            mutation_response = client.execute(mutation, set_shipping_input)
+            requested_fulfillment = mutation_response.data.set_shipping.order_or_error.order.requested_fulfillment
+            expect(requested_fulfillment.__typename).to eq('ShipArta')
+            expect(requested_fulfillment.address_line1).to eq('401 Broadway')
+          end
+
+          it 'shipping total cents are not updated' do
+            mutation_response = client.execute(mutation, set_shipping_input)
+
+            expect(mutation_response.data.set_shipping.order_or_error.order.shipping_total_cents).to eq nil
+            expect(order.reload.shipping_total_cents).to eq nil
+          end
+
+          it 'returns the correct requested fulfillment type' do
+            mutation_response = client.execute(mutation, set_shipping_input)
+            requested_fulfillment = mutation_response.data.set_shipping.order_or_error.order.requested_fulfillment
+
+            expect(requested_fulfillment.__typename).to eq('ShipArta')
+            expect(requested_fulfillment.address_line1).to eq('401 Broadway')
+          end
+
+          it 'sets relevant data on the order' do
+            client.execute(mutation, set_shipping_input)
+
+            expect(order.reload.fulfillment_type).to eq Order::SHIP_ARTA
+            expect(order.state).to eq Order::PENDING
+            expect(order.shipping_country).to eq 'US'
+            expect(order.shipping_city).to eq 'New York'
+            expect(order.shipping_region).to eq 'NY'
+            expect(order.shipping_postal_code).to eq '10012'
+            expect(order.buyer_phone_number).to eq '00123456789'
+            expect(order.shipping_name).to eq 'Fname Lname'
+            expect(order.shipping_address_line1).to eq '401 Broadway'
+            expect(order.shipping_address_line2).to eq 'Suite 80'
+            expect(order.state_expires_at).to eq(order.state_updated_at + 2.days)
           end
         end
       end

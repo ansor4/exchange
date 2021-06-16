@@ -16,8 +16,16 @@ class Types::LineItemType < Types::BaseObject
   field :updated_at, Types::DateTimeType, null: false
   field :fulfillments, Types::FulfillmentType.connection_type, null: true
   field :order, Types::OrderInterface, null: false
+  field :shipping_quote_options, Types::ShippingQuoteType.connection_type, null: true
 
   def price_cents
     object.list_price_cents
+  end
+
+  def shipping_quote_options
+    return unless object.order.fulfillment_type == Order::SHIP_ARTA && object.shipping_quote_requests.present?
+
+    # TODO: add a limit and order by most recent/relevant and optimize this
+    object.shipping_quote_requests.order(:created_at).last.shipping_quotes
   end
 end
