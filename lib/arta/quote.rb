@@ -42,7 +42,9 @@ module ARTA
           objects: [
             artwork_details
           ],
-          origin: artwork_origin_location_and_contact_info
+          origin: artwork_origin_location_and_contact_info,
+          internal_reference: "Purchase Order #{order.code}",
+          public_reference: "Order # #{order.code}"
         }
       }
     end

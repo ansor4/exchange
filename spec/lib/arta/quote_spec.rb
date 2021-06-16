@@ -59,7 +59,9 @@ describe ARTA::Quote do
             postal_code: '13409',
             region: 'BE',
             title: 'Partner Name'
-          }
+          },
+          internal_reference: "Purchase Order #{order.code}",
+          public_reference: "Order # #{order.code}"
         } }
     end
     # rubocop:enable Naming/VariableNumber
