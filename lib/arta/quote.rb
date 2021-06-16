@@ -50,10 +50,10 @@ module ARTA
     def artwork_details
       {
         subtype: format_artwork_type(artwork[:category], artwork[:framed]),
-        unit_of_measurement: 'cm',
-        height: artwork[:height_cm] || artwork[:diameter_cm],
-        width: artwork[:width_cm] || artwork[:diameter_cm],
-        depth: artwork[:depth_cm],
+        unit_of_measurement: artwork[:framed] && artwork[:framed_metric].present? ? artwork[:framed_metric] : 'cm',
+        height: artwork[:framed_height] || artwork[:framed_diameter] || artwork[:height_cm] || artwork[:diameter_cm],
+        width: artwork[:framed_width] || artwork[:framed_diameter] || artwork[:width_cm] || artwork[:diameter_cm],
+        depth: artwork[:framed_depth] || artwork[:depth_cm],
         value: convert_to_dollars,
         value_currency: artwork[:price_currency]
       }.merge(shipping_weight_and_metric).compact

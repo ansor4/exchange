@@ -80,35 +80,46 @@ describe ARTA::Quote do
       context 'when artwork data present' do
         before do
           line_item.list_price_cents = 30000
-          artwork[:width_cm] = 10.7
-          artwork[:height_cm] = 11.0
           artwork[:category] = 'Photography'
         end
 
         context 'when artwork is framed' do
           before do
             artwork[:framed] = true
+            artwork[:framed_diameter] = 12
+            artwork[:framed_height] = 13
+            artwork[:framed_depth] = 3
           end
 
           it 'returns properly formatted object parameter' do
             resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
-            expect(resolved_post_params[:height]).to eq(11.0)
+            expect(resolved_post_params[:height]).to eq(13.0)
+            expect(resolved_post_params[:depth]).to eq(3)
             expect(resolved_post_params[:subtype]).to eq('photograph_framed')
             expect(resolved_post_params[:unit_of_measurement]).to eq('cm')
-            expect(resolved_post_params[:width]).to eq(10.7)
+            expect(resolved_post_params[:width]).to eq(12.0)
             expect(resolved_post_params[:value]).to eq(300)
           end
         end
       end
 
-      context 'when artwork is not framed' do
+      context 'when artwork is not framed but has inches as framed metric' do
         before do
           artwork[:framed] = false
+          artwork[:framed_metric] = 'in'
         end
 
         it 'returns proper subtype' do
           resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
           expect(resolved_post_params[:subtype]).to eq('painting_unframed')
+          expect(resolved_post_params[:height]).to eq(30)
+          expect(resolved_post_params[:depth]).to eq(2.0)
+          expect(resolved_post_params[:width]).to eq(25.0)
+        end
+
+        it 'resolves framed metric to cm' do
+          resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
+          expect(resolved_post_params[:unit_of_measurement]).to eq('cm')
         end
       end
 
