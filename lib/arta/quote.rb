@@ -7,7 +7,12 @@ module ARTA
       "Painting": 'painting_framed',
       "Print": 'work_on_paper_framed',
       "Drawing, Collage or other Work on Paper": 'work_on_paper_framed',
-      "Mixed Media": 'mixed_media_framed'
+      "Mixed Media": 'mixed_media_framed',
+      "Design/Decorative Art": 'other_decorative_arts',
+      "Installation": 'other_art',
+      "Textile Arts": 'tapestry',
+      "Books and Portfolios": 'books',
+      "Other": 'other_art'
     }.freeze
 
     UNFRAMED_CATEGORY_MAP = {
@@ -16,7 +21,12 @@ module ARTA
       "Print": 'work_on_paper_unframed',
       "Drawing, Collage or other Work on Paper": 'work_on_paper_unframed',
       "Mixed Media": 'mixed_media_unframed',
-      "Sculpture": 'scuplture'
+      "Sculpture": 'scuplture',
+      "Design/Decorative Art": 'other_decorative_arts',
+      "Installation": 'other_art',
+      "Textile Arts": 'tapestry',
+      "Books and Portfolios": 'books',
+      "Other": 'other_art'
     }.freeze
 
     attr_reader :order, :line_item, :artwork, :list_price_cents, :buyer
@@ -52,7 +62,7 @@ module ARTA
 
     def artwork_details
       {
-        subtype: format_artwork_type(artwork[:category], artwork[:framed]),
+        subtype: format_artwork_type(artwork[:category], artwork[:framed]) || 'other_art',
         unit_of_measurement: artwork[:framed] && artwork[:framed_metric].present? ? artwork[:framed_metric] : 'cm',
         height: artwork[:framed_height] || artwork[:framed_diameter] || artwork[:height_cm] || artwork[:diameter_cm],
         width: artwork[:framed_width] || artwork[:framed_diameter] || artwork[:width_cm] || artwork[:diameter_cm],

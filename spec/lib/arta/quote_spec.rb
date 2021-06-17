@@ -137,6 +137,18 @@ describe ARTA::Quote do
           expect(resolved_post_params).not_to include(:width)
         end
       end
+
+      context 'when artworkis framed & has some other category' do
+        before do
+          artwork[:category] = 'Textile Arts'
+          artwork[:framed] = true
+        end
+
+        it 'applies the correct ARTA subtype' do
+          resolved_post_params = service.send(:formatted_post_params)[:request][:objects].first
+          expect(resolved_post_params[:subtype]).to eq 'tapestry'
+        end
+      end
     end
   end
 end
