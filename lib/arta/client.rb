@@ -19,12 +19,12 @@ module ARTA
       def process(response)
         # TODO: We should def handle 500s from ARTA here
         # eg: unhandled exception: status: 500, body: {}
-
+        result = JSON.parse(response.body, symbolize_names: true)
         # TODO: 422s that have an error message maybe bubble them up somewhere
         # eg: {:errors=>{:"objects/0"=>["Required property height was not present."]}}
-        raise ARTAError, "Couldn't perform request! status: #{response.status}. Message: #{response.body[:errors]}" unless response.success?
+        raise ARTAError, "Couldn't perform request! status: #{response.status}. Message: #{result[:errors]}" unless response.success?
 
-        response.body
+        result
       end
 
       def headers
@@ -43,9 +43,7 @@ module ARTA
           API_ROOT_URL,
           request: timeout_defaults,
           headers: headers
-        ) do |conn|
-          conn.response(:json, parser_options: { symbolize_names: true })
-        end
+        )
       end
     end
   end
