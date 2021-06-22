@@ -89,7 +89,10 @@ module OrderService
       raise Errors::ProcessingError.new(:capture_failed, transaction.failure_data) if transaction.failed?
     end
 
-    order.line_items.each { |li| RecordSalesTaxJob.perform_later(li.id) }
+    order.line_items.each do |li|
+      RecordSalesTaxJob.perform_later(li.id)
+      ARTA::ShippingService.new(li).book_shipment if order.fulfillment_type == Order::SHIP_ARTA
+    end
     OrderEvent.delay_post(order, user_id)
     OrderFollowUpJob.set(wait_until: order.state_expires_at).perform_later(order.id, order.state)
     ReminderFollowUpJob.set(wait_until: order.state_expiration_reminder_time).perform_later(order.id, order.state)

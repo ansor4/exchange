@@ -418,6 +418,42 @@ describe OrderService, type: :services do
         end
       end
     end
+    context 'buy now, book arta shipment' do
+      let(:arta_shipment_response) do
+        JSON.parse(File.read('spec/support/fixtures/shipment_create_request_success_response.json'), { symbolize_names: true })
+      end
+      before do
+        prepare_payment_intent_capture_success
+        ActiveJob::Base.queue_adapter = :test
+        allow(Gravity).to receive(:debit_commission_exemption).and_return(currency_code: 'USD', amount_minor: 0)
+        allow(ARTA::Shipment).to receive(:create).and_return(arta_shipment_response)
+      end
+      it 'calls ARTA when selected as ARTA shipping' do
+        order.update!(
+          shipping_total_cents: 100_00,
+          fulfillment_type: Order::SHIP_ARTA,
+          buyer_phone_number: '123-123-1234',
+          shipping_name: 'S. Mell McFarts',
+          shipping_address_line1: '399 Ronald McDonald Lane',
+          shipping_address_line2: '',
+          shipping_city: 'Burgertown',
+          shipping_region: 'KY',
+          shipping_country: 'USA',
+          shipping_postal_code: '10013'
+        )
+
+        order.line_items.each { |li| li.update!(selected_shipping_quote_id: Fabricate(:shipping_quote).id) }
+
+        # See if we make a call to ARTA
+        expect(ARTA::Shipment).to receive(:create).twice
+        OrderService.approve!(order, user_id)
+
+        # See if we're persisting Shipment data
+        shipment_ids = Shipment.pluck(:line_item_id)
+        expect(shipment_ids).to include(order.line_items.first.id)
+        expect(shipment_ids).to include(order.line_items.second.id)
+      end
+    end
   end
 
   describe '#seller_lapse!' do
